@@ -33,10 +33,16 @@ if __name__ == "__main__":
         # Device selection
         index = int(input("[lab-tool] >> Device selection: "))
 
-        # Setting up the oscilloscope
+        # Opening the oscilloscope instance
         console("Opening the {} device...".format(resources[index]))
         resource = manager.open_resource(resources[index])
-        resource.query("*RST")
+        console("Device identification: {}".format(resource.query("*IDN?")))
+
+        # Setting
+        resource.write_termination = resource.read_termination = "\n"
+
+        # Setting up the oscilloscope
+        resource.write("*RST")
 
     except:
-        console("Invalid input... nicely done! I give up.")
+        console("I give up.")
