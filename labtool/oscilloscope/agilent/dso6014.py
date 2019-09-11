@@ -9,6 +9,10 @@ from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
 from labtool.oscilloscope.base.oscilloscope import Coupling
 from labtool.oscilloscope.base.oscilloscope import Display
 from labtool.oscilloscope.base.oscilloscope import TimebaseMode
+from labtool.oscilloscope.base.oscilloscope import TriggerMode
+from labtool.oscilloscope.base.oscilloscope import TriggerSource
+from labtool.oscilloscope.base.oscilloscope import TriggerSlope
+from labtool.oscilloscope.base.oscilloscope import TriggerSweep
 
 
 ######################
@@ -55,6 +59,31 @@ class AgilentDSO6014(Oscilloscope):
         TimebaseMode.Delayed: "WINDow",
         TimebaseMode.XY: "XY",
         TimebaseMode.Roll: "ROLL"
+    }
+
+    trigger_modes = {
+        TriggerMode.Edge: "EDGE"
+    }
+
+    trigger_sources = {
+        TriggerSource.Channel_1: "CHANnel1",
+        TriggerSource.Channel_2: "CHANnel2",
+        TriggerSource.Channel_3: "CHANnel3",
+        TriggerSource.Channel_4: "CHANnel4",
+        TriggerSource.External: "EXTernal",
+        TriggerSource.Line: "LINE"
+    }
+
+    trigger_slopes = {
+        TriggerSlope.Negative: "NEGative",
+        TriggerSlope.Positive: "POSitive",
+        TriggerSlope.Either: "EITHer",
+        TriggerSlope.Alternate: "ALTernate"
+    }
+
+    trigger_sweeps = {
+        TriggerSweep.Auto: "AUTO",
+        TriggerSweep.Normal: "NORMal"
     }
 
     ###################
@@ -155,6 +184,30 @@ class AgilentDSO6014(Oscilloscope):
     def timebase_scale(self, scale_value: float):
         """ Sets the scale value of the time base """
         self.resource.write(":TIMebase:SCALe {}".format(scale_value))
+
+    ####################
+    # TRIGGER COMMANDS #
+    ####################
+
+    def trigger_mode(self, mode: TriggerMode):
+        """ Setting the trigger mode of the oscilloscope """
+        self.resource.write(":TRIG:MODE {}".format(self.trigger_modes[mode]))
+
+    def trigger_sweep(self, sweep: TriggerSweep):
+        """ Setting the trigger sweep of the oscilloscope """
+        self.resource.write(":TRIG:SWE {}".format(self.trigger_sweeps[sweep]))
+
+    def trigger_edge_level(self, level_value: float):
+        """ Setting the level of the edge triggering mode """
+        self.resource.write(":TRIG[:EDGE]:LEV {}".format(level_value))
+
+    def trigger_edge_source(self, source: TriggerSource):
+        """ Setting the edge triggering source """
+        self.resource.write(":TRIG[:EDGE]:SOUR {}".format(self.trigger_sources[source]))
+
+    def trigger_edge_slope(self, slope: TriggerSlope):
+        """ Setting the edge triggering slope """
+        self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slopes]))
 
 
 #############

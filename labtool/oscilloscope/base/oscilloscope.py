@@ -51,6 +51,31 @@ class TimebaseMode(Enum):
     Roll = "Roll"
 
 
+class TriggerMode(Enum):
+    Edge = "Edge"
+
+
+class TriggerSweep(Enum):
+    Auto = "Auto"
+    Normal = "Normal"
+
+
+class TriggerSource(Enum):
+    Channel_1 = "Channel_1"
+    Channel_2 = "Channel_2"
+    Channel_3 = "Channel_3"
+    Channel_4 = "Channel_4"
+    External = "External"
+    Line = "Line"
+
+
+class TriggerSlope(Enum):
+    Negative = "Negative"
+    Positive = "Positive"
+    Either = "Either"
+    Alternate = "Alternate"
+
+
 ###########################
 # Oscilloscope Base Class #
 ###########################
@@ -168,4 +193,33 @@ class Oscilloscope(Instrument, ABC):
     @abstractmethod
     def timebase_scale(self, scale_value: float):
         """ Sets the scale value of the time base """
+        pass
+
+    ####################
+    # TRIGGER COMMANDS #
+    ####################
+
+    @abstractmethod
+    def trigger_mode(self, mode: TriggerMode):
+        """ Setting the trigger mode of the oscilloscope """
+        pass
+
+    @abstractmethod
+    def trigger_sweep(self, sweep: TriggerSweep):
+        """ Setting the trigger sweep of the oscilloscope """
+        pass
+
+    @abstractmethod
+    def trigger_edge_level(self, level_value: float):
+        """ Setting the level of the edge triggering mode """
+        pass
+
+    @abstractmethod
+    def trigger_edge_source(self, source: TriggerSource):
+        """ Setting the edge triggering source """
+        pass
+
+    @abstractmethod
+    def trigger_edge_slope(self, slope: TriggerSlope):
+        """ Setting the edge triggering slope """
         pass
