@@ -240,7 +240,8 @@ class AgilentDSO6014(Oscilloscope):
 
     def waveform_points(self, points: int):
         """ Sets the number of points to be taken from the waveform data """
-        self.resource.write(":WAV:POINT {}".format(points))
+        self.resource.write(":WAV:POIN:MODE RAW")
+        self.resource.write(":WAV:POIN {}".format(points))
 
     def waveform_data(self):
         """ Returns the waveform data """

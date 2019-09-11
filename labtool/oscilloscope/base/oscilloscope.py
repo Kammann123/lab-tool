@@ -272,6 +272,13 @@ class Oscilloscope(Instrument, ABC):
     # SUBSYSTEM SETUP METHODS #
     ###########################
 
+    def setup_acquire(self, setup: AcquireSetup):
+        """ Sets up all the parameters of the acquire subsystem """
+        if setup.mode is not None:
+            self.acquire_mode(setup.mode)
+        if setup.average_count is not None:
+            self.acquire_average_count(setup.average_count)
+
     def setup_timebase(self, setup: TimebaseSetup):
         """ Sets up all the parameters of the timebase subsystem using a class
         which contains the parameters values. """
@@ -323,17 +330,27 @@ class Oscilloscope(Instrument, ABC):
     setting up that option in the oscilloscope channel will be omitted. """
 
 
+class AcquireSetup(object):
+    """ Acquire setup values """
+
+    def __init__(self,
+                 acquire_mode=None,
+                 acquire_average_count=None):
+        self.mode = acquire_mode
+        self.average_count = acquire_average_count
+
+
 class ChannelSetup(object):
     """ Channel setup values """
 
     def __init__(self,
-                 bandwidth_limit: BandwidthLimit,
-                 coupling: Coupling,
-                 probe: float,
-                 range_value: float,
-                 scale: float,
-                 display: bool,
-                 offset: float):
+                 bandwidth_limit=None,
+                 coupling=None,
+                 probe=None,
+                 range_value=None,
+                 scale=None,
+                 display=None,
+                 offset=None):
         self.bandwidth_limit = bandwidth_limit
         self.coupling = coupling
         self.probe = probe
@@ -347,11 +364,11 @@ class TriggerSetup(object):
     """ Trigger setup values """
 
     def __init__(self,
-                 mode: TriggerMode,
-                 sweep: TriggerSweep,
-                 level: float,
-                 source: Sources,
-                 slope: TriggerSlope):
+                 mode=None,
+                 sweep=None,
+                 level=None,
+                 source=None,
+                 slope=None):
         self.mode = mode
         self.sweep = sweep
         self.level = level
@@ -363,9 +380,9 @@ class TimebaseSetup(object):
     """ Timebase setup values """
 
     def __init__(self,
-                 mode: TimebaseMode,
-                 time_range: float,
-                 time_scale: float):
+                 mode=None,
+                 time_range=None,
+                 time_scale=None):
         self.mode = mode
         self.range = time_range
         self.scale = time_scale
