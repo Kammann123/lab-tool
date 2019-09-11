@@ -19,6 +19,19 @@ from enum import Enum
 from labtool.instrument import Instrument
 
 
+########################################
+# Oscilloscope Enumeration Definitions #
+########################################
+class AcquireMode(Enum):
+    Normal = "Normal"
+    Average = "Average"
+    HighResolution = "HighResolution"
+    PeakDetect = "PeakDetect"
+
+
+###########################
+# Oscilloscope Base Class #
+###########################
 class Oscilloscope(Instrument, ABC):
     """ Oscilloscope Base Class.
     When inheriting to define a child class, static parameters are needed
@@ -63,3 +76,16 @@ class Oscilloscope(Instrument, ABC):
         that had been captured in the screen. """
         pass
 
+    ####################
+    # ACQUIRE COMMANDS #
+    ####################
+
+    @abstractmethod
+    def acquire_mode(self, mode: AcquireMode):
+        """ Sets the AcquireMode of the oscilloscope """
+        pass
+
+    @abstractmethod
+    def acquire_average_count(self, count: int):
+        """ Sets the amount of samples to be used when averaging the signal. """
+        pass
