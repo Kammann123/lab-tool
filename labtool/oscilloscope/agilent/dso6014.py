@@ -8,6 +8,7 @@ from labtool.oscilloscope.base.oscilloscope import AcquireMode
 from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
 from labtool.oscilloscope.base.oscilloscope import Coupling
 from labtool.oscilloscope.base.oscilloscope import Display
+from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 
 
 ######################
@@ -49,8 +50,15 @@ class AgilentDSO6014(Oscilloscope):
         Display.OFF: "0"
     }
 
+    timebase_modes = {
+        TimebaseMode.Main: "MAIN",
+        TimebaseMode.Delayed: "WINDow",
+        TimebaseMode.XY: "XY",
+        TimebaseMode.Roll: "ROLL"
+    }
+
     ###################
-    # COMMON COMMANDS
+    # COMMON COMMANDS #
     ###################
 
     def reset(self):
@@ -116,6 +124,10 @@ class AgilentDSO6014(Oscilloscope):
         """ Sets the probe value of the channel """
         self.resource.write(":CHAN{}:PROB {}".format(channel, probe_value))
 
+    def range(self, channel: int, range_value: float):
+        """ Sets the range of the vertical axis of the channel """
+        self.resource.write(":CHAN{}:RANG {}".format(channel, range_value))
+
     def scale(self, channel: int, scale_value: float):
         """ Sets the vertical scale of the channel """
         self.resource.write(":CHAN{}:SCAL {}".format(channel, scale_value))
@@ -127,6 +139,22 @@ class AgilentDSO6014(Oscilloscope):
     def offset(self, channel: int, offset_value: float):
         """ Sets the offset value of the channel in the display """
         self.resource.write(":CHAN{}:OFFS {}".format(channel, offset_value))
+
+    #####################
+    # TIMEBASE COMMANDS #
+    #####################
+
+    def timebase_mode(self, mode: TimebaseMode):
+        """ Sets the timebase mode of the oscilloscope """
+        self.resource.write(":TIMebase:MODE {}".format(self.timebase_modes[mode]))
+
+    def timebase_range(self, time_range: float):
+        """ Sets the full range of the horizontal axis of the oscilloscope """
+        self.resource.write(":TIMebase:RANGe {}".format(time_range))
+
+    def timebase_scale(self, scale_value: float):
+        """ Sets the scale value of the time base """
+        self.resource.write(":TIMebase:SCALe {}".format(scale_value))
 
 
 #############

@@ -44,6 +44,13 @@ class Display(Enum):
     OFF = "OFF"
 
 
+class TimebaseMode(Enum):
+    Main = "Main"
+    Delayed = "Delayed"
+    XY = "XY"
+    Roll = "Roll"
+
+
 ###########################
 # Oscilloscope Base Class #
 ###########################
@@ -125,6 +132,11 @@ class Oscilloscope(Instrument, ABC):
         pass
 
     @abstractmethod
+    def range(self, channel: int, range_value: float):
+        """ Sets the range of the vertical axis of the channel """
+        pass
+
+    @abstractmethod
     def scale(self, channel: int, scale_value: float):
         """ Sets the vertical scale of the channel """
         pass
@@ -137,4 +149,23 @@ class Oscilloscope(Instrument, ABC):
     @abstractmethod
     def offset(self, channel: int, offset_value: float):
         """ Sets the offset value of the channel in the display """
+        pass
+
+    #####################
+    # TIMEBASE COMMANDS #
+    #####################
+
+    @abstractmethod
+    def timebase_mode(self, mode: TimebaseMode):
+        """ Sets the timebase mode of the oscilloscope """
+        pass
+
+    @abstractmethod
+    def timebase_range(self, time_range: float):
+        """ Sets the full range of the horizontal axis of the oscilloscope """
+        pass
+
+    @abstractmethod
+    def timebase_scale(self, scale_value: float):
+        """ Sets the scale value of the time base """
         pass
