@@ -44,5 +44,22 @@ class Oscilloscope(Instrument, ABC):
         pass
 
     #################
-    # ROOT COMMANDS
+    # ROOT COMMANDS #
     #################
+
+    @abstractmethod
+    def autoscale(self):
+        """ Autoscaling the oscilloscope's channels. """
+        pass
+
+    @abstractmethod
+    def run(self):
+        """ Runs the measuring process of the oscilloscope. """
+        pass
+
+    @abstractmethod
+    def stop(self):
+        """ Stops the oscilloscope measuring, freezing the signal waveform
+        that had been captured in the screen. """
+        pass
+
