@@ -39,9 +39,18 @@ class Instrument(object):
         raised. """
 
         try:
+            # Creating an instance of ResourceManager and opening the given resource
             resource_manager = pyvisa.ResourceManager()
             self.resource = resource_manager.open_resource(resource_name)
+
+            # Setting up the resource
+            self.resource.write_termination = "\n"
+            self.resource.read_termination = "\n"
         except:
             raise ResourceNotFound
 
-
+    def __del__(self):
+        """ Deleting the interface opened to interact with the given resource.
+            Closing the visa connection.
+         """
+        self.resource.close()
