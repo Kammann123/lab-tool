@@ -216,7 +216,7 @@ class AgilentDSO6014(Oscilloscope):
 
     def trigger_edge_slope(self, slope: TriggerSlope):
         """ Setting the edge triggering slope """
-        self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slopes]))
+        self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slope]))
 
     #####################
     # WAVEFORM COMMANDS #

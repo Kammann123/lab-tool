@@ -12,6 +12,10 @@ from labtool.oscilloscope.base.oscilloscope import TriggerSetup
 from labtool.oscilloscope.base.oscilloscope import TimebaseSetup
 from labtool.oscilloscope.base.oscilloscope import AcquireSetup
 
+from labtool.oscilloscope.base.oscilloscope import Sources
+
+from labtool.oscilloscope.base.oscilloscope import Oscilloscope
+
 
 #########################
 # LabTool project types #
@@ -89,12 +93,24 @@ class LabTool(object):
         }
 
     @staticmethod
+    def source_scale(oscilloscope: Oscilloscope, source: Sources):
+        constant_limit = 1e3
+        range_value = 50
+
+        source_vpp = float(oscilloscope.measure_vpp(source))
+        while abs(source_vpp) > constant_limit:
+            oscilloscope.range(Oscilloscope.source_to_channel(source), range_value)
+            range_value -= 10
+            sleep(0.01)
+            source_vpp = float(oscilloscope.measure_vpp(source))
+
+    @staticmethod
     def run_bode(oscilloscope,
                  generator,
-                 delay_ticks: int,
+                 delay: float,
                  input_voltage: float,
-                 input_channel: int,
-                 output_channel: int,
+                 input_channel: Sources,
+                 output_channel: Sources,
                  input_channel_setup: ChannelSetup,
                  output_channel_setup: ChannelSetup,
                  trigger_setup: TriggerSetup,
@@ -117,8 +133,8 @@ class LabTool(object):
             return = [
                 {
                     "frequency": value_of_frequency,
-                    "input_amplitude": value_of_input_amplitude,
-                    "output_amplitude": value_of_output_amplitude,
+                    "input_vpp": value_of_input_amplitude,
+                    "output_vpp": value_of_output_amplitude,
                     "bode_module": value_of_bode_module,
                     "bode_phase": value_of_bode_phase
                 }
@@ -131,7 +147,6 @@ class LabTool(object):
         current_frequency = bode_setup.min_frequency
         current_amplitude = input_voltage
         current_step = 1
-        current_tick = 0
 
         measures = []
 
@@ -140,10 +155,14 @@ class LabTool(object):
 
             if bode_state is LabTool.BodeStates.INITIAL_SETUP:
                 # Configuring the input channel
-                oscilloscope.setup_channel(input_channel, input_channel_setup)
+                oscilloscope.setup_channel(
+                    oscilloscope.source_to_channel(input_channel),
+                    input_channel_setup)
 
                 # Configuring the output channel
-                oscilloscope.setup_channel(output_channel, output_channel_setup)
+                oscilloscope.setup_channel(
+                    oscilloscope.source_to_channel(output_channel),
+                    output_channel_setup)
 
                 # Configuring the trigger subsystem
                 oscilloscope.setup_trigger(trigger_setup)
@@ -170,7 +189,9 @@ class LabTool(object):
                 current_voltage = input_voltage
 
                 # Setting the range of the timebase
-                oscilloscope.timebase_range(3 / current_frequency)
+                oscilloscope.timebase_range(2 / current_frequency)
+                LabTool.source_scale(oscilloscope, input_channel)
+                LabTool.source_scale(oscilloscope, output_channel)
 
                 # TODO: Charlie! Agregar la llamada para actualizar el valor pico a pico y la frecuencia,
                 # TODO: la amplitud puede parecer absurdo... por ahora. Son los dos current_ de arriba!.
@@ -181,18 +202,32 @@ class LabTool(object):
             elif bode_state is LabTool.BodeStates.WAIT_STABLE:
 
                 # Waiting a period tick, then checking if finished...
-                sleep(1 / current_frequency)
-                current_tick += 1
-                if current_tick == delay_ticks:
-                    current_tick = 0
-                    bode_state = LabTool.BodeStates.DOWNLOAD_DATA
+                sleep(delay)
+
+                # State change
+                bode_state = LabTool.BodeStates.DOWNLOAD_DATA
 
             elif bode_state is LabTool.BodeStates.DOWNLOAD_DATA:
+
+                # Retrieving data from the oscilloscope
                 input_vpp = float(oscilloscope.measure_vpp(input_channel))
                 output_vpp = float(oscilloscope.measure_vpp(output_channel))
+                ratio = float(oscilloscope.measure_vratio(output_channel, input_channel))
+                phase = float(oscilloscope.measure_phase(output_channel, input_channel))
 
-                ratio_db = float(oscilloscope.measure_vratio(output_channel, input_channel))
-                pass
+                # Appending measurents to data list
+                measures.append(
+                    {
+                        "frequency": current_frequency,
+                        "input_vpp": input_vpp,
+                        "output_vpp": output_vpp,
+                        "bode_module": ratio,
+                        "bode_phase": phase
+                    }
+                )
+
+                # Bode state change
+                bode_state = LabTool.BodeStates.VERIFY_DONE
 
             elif bode_state is LabTool.BodeStates.VERIFY_DONE:
                 # Verifying if the number of samples taken is the one set

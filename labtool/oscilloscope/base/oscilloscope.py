@@ -362,8 +362,8 @@ class Oscilloscope(Instrument, ABC):
     @staticmethod
     def source_to_channel(source: Sources):
         """ Returns the channel number when receiving the Source Enum data type """
-        if source[:-1] == "Channel_":
-            return int(sources[-1])
+        if source.value[:-1] == "Channel_":
+            return int(source.value[-1])
         return None
 
     @staticmethod
