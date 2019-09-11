@@ -123,6 +123,7 @@ class Agilent33220A(Generator):
         """Changes output load. It can be a fixed value or HighZ"""
         if load_param == OutputLoad.HighZ:
             self.resource.write("OUTPut:LOAD {}".format(self.output_loads[load_param]))
+
         else:
             self.resource.write("OUTPut:LOAD {}".format(load))
 
