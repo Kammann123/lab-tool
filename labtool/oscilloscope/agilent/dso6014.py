@@ -15,6 +15,8 @@ from labtool.oscilloscope.base.oscilloscope import TriggerSlope
 from labtool.oscilloscope.base.oscilloscope import TriggerSweep
 from labtool.oscilloscope.base.oscilloscope import WaveformFormat
 
+from labtool.tool import LabTool
+
 
 ######################
 # Agilent Exceptions #
@@ -274,3 +276,7 @@ def is_power_of(target: int, power: int) -> bool:
         return True
     else:
         return False
+
+
+# Subscribing the new instrument to the lab-tool register
+LabTool.add_oscilloscope(AgilentDSO6014)
