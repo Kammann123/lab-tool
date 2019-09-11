@@ -5,6 +5,9 @@ DSO6014 Agilent Model class implementation.
 # labtool project modules
 from labtool.oscilloscope.base.oscilloscope import Oscilloscope
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
+from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
+from labtool.oscilloscope.base.oscilloscope import Coupling
+from labtool.oscilloscope.base.oscilloscope import Display
 
 
 ######################
@@ -34,6 +37,16 @@ class AgilentDSO6014(Oscilloscope):
         AcquireMode.Average: "AVERage",
         AcquireMode.HighResolution: "HRESolution",
         AcquireMode.PeakDetect: "PEAK"
+    }
+
+    bandwidth_limits = {
+        BandwidthLimit.ON: "1",
+        BandwidthLimit.OFF: "0"
+    }
+
+    display_status = {
+        Display.ON: "1",
+        Display.OFF: "0"
     }
 
     ###################
@@ -75,7 +88,7 @@ class AgilentDSO6014(Oscilloscope):
 
     def acquire_mode(self, mode: AcquireMode):
         """ Sets the AcquireMode of the oscilloscope """
-        self.resource.write(":ACQuire:TYPE {}".format(acquire_modes[mode]))
+        self.resource.write(":ACQuire:TYPE {}".format(self.acquire_modes[mode]))
 
     def acquire_average_count(self, count: int):
         """ Sets the amount of samples to be used when averaging the signal. """
@@ -86,6 +99,34 @@ class AgilentDSO6014(Oscilloscope):
             self.resource.write(":ACQuire:COUNt {}".format(count))
         else:
             raise AverageCountError
+
+    ####################
+    # CHANNEL COMMANDS #
+    ####################
+
+    def bandwidth_limit(self, channel: int, status: BandwidthLimit):
+        """ Sets the status of the BandwidthLimit """
+        self.resource.write(":CHAN{}:BWL {}".format(channel, self.bandwidth_limits[status]))
+
+    def coupling(self, channel: int, status: Coupling):
+        """ Sets the status of the Coupling """
+        self.resource.write(":CHAN{}:COUP {}".format(channel, status.value))
+
+    def probe(self, channel: int, probe_value: int):
+        """ Sets the probe value of the channel """
+        self.resource.write(":CHAN{}:PROB {}".format(channel, probe_value))
+
+    def scale(self, channel: int, scale_value: float):
+        """ Sets the vertical scale of the channel """
+        self.resource.write(":CHAN{}:SCAL {}".format(channel, scale_value))
+
+    def display(self, channel: int, status: Display):
+        """ Sets the Channel Status in the oscilloscope's display """
+        self.resource.write(":CHAN{}:DISP {}".format(channel, self.display_status[status]))
+
+    def offset(self, channel: int, offset_value: float):
+        """ Sets the offset value of the channel in the display """
+        self.resource.write(":CHAN{}:OFFS {}".format(channel, offset_value))
 
 
 #############

@@ -29,6 +29,21 @@ class AcquireMode(Enum):
     PeakDetect = "PeakDetect"
 
 
+class BandwidthLimit(Enum):
+    OFF = "OFF"
+    ON = "ON"
+
+
+class Coupling(Enum):
+    AC = "AC"
+    DC = "DC"
+
+
+class Display(Enum):
+    ON = "ON"
+    OFF = "OFF"
+
+
 ###########################
 # Oscilloscope Base Class #
 ###########################
@@ -88,4 +103,38 @@ class Oscilloscope(Instrument, ABC):
     @abstractmethod
     def acquire_average_count(self, count: int):
         """ Sets the amount of samples to be used when averaging the signal. """
+        pass
+
+    ####################
+    # CHANNEL COMMANDS #
+    ####################
+
+    @abstractmethod
+    def bandwidth_limit(self, channel: int, status: BandwidthLimit):
+        """ Sets the status of the BandwidthLimit """
+        pass
+
+    @abstractmethod
+    def coupling(self, channel: int, status: Coupling):
+        """ Sets the status of the Coupling """
+        pass
+
+    @abstractmethod
+    def probe(self, channel: int, probe_value: int):
+        """ Sets the probe value of the channel """
+        pass
+
+    @abstractmethod
+    def scale(self, channel: int, scale_value: float):
+        """ Sets the vertical scale of the channel """
+        pass
+
+    @abstractmethod
+    def display(self, channel: int, status: Display):
+        """ Sets the Channel Status in the oscilloscope's display """
+        pass
+
+    @abstractmethod
+    def offset(self, channel: int, offset_value: float):
+        """ Sets the offset value of the channel in the display """
         pass
