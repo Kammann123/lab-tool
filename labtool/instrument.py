@@ -6,6 +6,10 @@ Instrument Base Class to define a common or standard way to identify instruments
 import pyvisa
 
 
+################################
+# Instrument module exceptions #
+################################
+
 class ResourceNotFound(Exception):
     def __init__(self):
         super(ResourceNotFound, self).__init__(
@@ -13,10 +17,21 @@ class ResourceNotFound(Exception):
         )
 
 
+######################################
+# Instrument enumeration definitions #
+######################################
+
+
+#########################
+# Instrument Base Class #
+#########################
+
 class Instrument(object):
     """ Instrument base class """
 
-    idn = "Instrument's IDN"
+    # Instrument information, static values for each class
+    brand = "Instrument's Brand"
+    model = "Instrument's Model"
 
     def __init__(self, resource_name):
         """ A Resource is opened and its reference will be saved, but if there is
@@ -28,3 +43,5 @@ class Instrument(object):
             self.resource = resource_manager.open_resource(resource_name)
         except:
             raise ResourceNotFound
+
+
