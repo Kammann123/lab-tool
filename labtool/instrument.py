@@ -44,4 +44,8 @@ class Instrument(object):
         except:
             raise ResourceNotFound
 
-
+    def __del__(self):
+        """ Deleting the interface opened to interact with the given resource.
+            Closing the visa connection.
+         """
+        self.resource.close()
