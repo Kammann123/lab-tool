@@ -7,13 +7,13 @@ from labtool.oscilloscope.base.oscilloscope import Oscilloscope
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
 from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
 from labtool.oscilloscope.base.oscilloscope import Coupling
-from labtool.oscilloscope.base.oscilloscope import Display
 from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 from labtool.oscilloscope.base.oscilloscope import TriggerMode
 from labtool.oscilloscope.base.oscilloscope import Sources
 from labtool.oscilloscope.base.oscilloscope import TriggerSlope
 from labtool.oscilloscope.base.oscilloscope import TriggerSweep
 from labtool.oscilloscope.base.oscilloscope import WaveformFormat
+from labtool.oscilloscope.base.oscilloscope import AcquireMode
 
 from labtool.tool import LabTool
 
@@ -276,7 +276,7 @@ class AgilentDSO6014(Oscilloscope):
             )
         )
 
-    def measure_phase(self, target_sources: Sources, reference_sources: Sources):
+    def measure_phase(self, target_source: Sources, reference_source: Sources):
         """ Measures the phase of the target source """
         return self.resource.query(
             ":MEAS:PHAS? {}, {}".format(

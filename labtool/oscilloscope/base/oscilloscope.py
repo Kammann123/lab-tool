@@ -19,6 +19,72 @@ from enum import Enum
 from labtool.base.instrument import Instrument
 
 
+##############################
+# Oscilloscope setup classes #
+##############################
+
+""" Note: If any of the parameters set in the Setup classes has a None value, then
+    setting up that option in the oscilloscope channel will be omitted. """
+
+
+class AcquireSetup(object):
+    """ Acquire setup values """
+
+    def __init__(self,
+                 acquire_mode=None,
+                 acquire_average_count=None):
+        self.mode = acquire_mode
+        self.average_count = acquire_average_count
+
+
+class ChannelSetup(object):
+    """ Channel setup values """
+
+    def __init__(self,
+                 bandwidth_limit=None,
+                 coupling=None,
+                 probe=None,
+                 range_value=None,
+                 scale=None,
+                 display=None,
+                 offset=None):
+        self.bandwidth_limit = bandwidth_limit
+        self.coupling = coupling
+        self.probe = probe
+        self.range = range_value
+        self.scale = scale
+        self.display = display
+        self.offset = offset
+
+
+class TriggerSetup(object):
+    """ Trigger setup values """
+
+    def __init__(self,
+                 mode=None,
+                 sweep=None,
+                 level=None,
+                 source=None,
+                 slope=None):
+        self.mode = mode
+        self.sweep = sweep
+        self.level = level
+        self.source = source
+        self.slope = slope
+
+
+class TimebaseSetup(object):
+    """ Timebase setup values """
+
+    def __init__(self,
+                 mode=None,
+                 time_range=None,
+                 time_scale=None):
+        self.mode = mode
+        self.range = time_range
+        self.scale = time_scale
+
+
 ########################################
 # Oscilloscope Enumeration Definitions #
 ########################################
@@ -67,6 +133,8 @@ class Sources(Enum):
     Channel_2 = "Channel_2"
     Channel_3 = "Channel_3"
     Channel_4 = "Channel_4"
+    Channel_5 = "Channel_5"
+    Channel_6 = "Channel_6"
     External = "External"
     Line = "Line"
 
@@ -287,6 +355,25 @@ class Oscilloscope(Instrument, ABC):
         """ Measures the phase of the target source """
         pass
 
+    ##################
+    # HELPER METHODS #
+    ##################
+
+    @staticmethod
+    def source_to_channel(source: Sources):
+        """ Returns the channel number when receiving the Source Enum data type """
+        if source[:-1] == "Channel_":
+            return int(sources[-1])
+        return None
+
+    @staticmethod
+    def channel_to_source(number: int):
+        """ Returns the source enum definition from the channel number """
+        formatted_channel = "Channel_{}".format(number)
+        if formatted_channel in [source.value for source in Sources]:
+            return formatted_channel
+        return None
+
     ###########################
     # SUBSYSTEM SETUP METHODS #
     ###########################
@@ -339,69 +426,3 @@ class Oscilloscope(Instrument, ABC):
             self.display(channel, setup.display)
         if setup.offset is not None:
             self.offset(channel, setup.offset)
-
-
-##############################
-# Oscilloscope setup classes #
-##############################
-
-""" Note: If any of the parameters set in the Setup classes has a None value, then
-    setting up that option in the oscilloscope channel will be omitted. """
-
-
-class AcquireSetup(object):
-    """ Acquire setup values """
-
-    def __init__(self,
-                 acquire_mode=None,
-                 acquire_average_count=None):
-        self.mode = acquire_mode
-        self.average_count = acquire_average_count
-
-
-class ChannelSetup(object):
-    """ Channel setup values """
-
-    def __init__(self,
-                 bandwidth_limit=None,
-                 coupling=None,
-                 probe=None,
-                 range_value=None,
-                 scale=None,
-                 display=None,
-                 offset=None):
-        self.bandwidth_limit = bandwidth_limit
-        self.coupling = coupling
-        self.probe = probe
-        self.range = range_value
-        self.scale = scale
-        self.display = display
-        self.offset = offset
-
-
-class TriggerSetup(object):
-    """ Trigger setup values """
-
-    def __init__(self,
-                 mode=None,
-                 sweep=None,
-                 level=None,
-                 source=None,
-                 slope=None):
-        self.mode = mode
-        self.sweep = sweep
-        self.level = level
-        self.source = source
-        self.slope = slope
-
-
-class TimebaseSetup(object):
-    """ Timebase setup values """
-
-    def __init__(self,
-                 mode=None,
-                 time_range=None,
-                 time_scale=None):
-        self.mode = mode
-        self.range = time_range
-        self.scale = time_scale

@@ -58,12 +58,12 @@ class LabTool(object):
     @staticmethod
     def add_oscilloscope(oscilloscope):
         """ Registers a new Oscilloscope Class """
-        available_oscilloscopes.append(oscilloscope)
+        LabTool.available_oscilloscopes.append(oscilloscope)
 
     @staticmethod
     def add_generator(generator):
         """ Registers a new Generator Class """
-        available_generators.append(generator)
+        LabTool.available_generators.append(generator)
 
     @staticmethod
     def download_waveform(oscilloscope,
@@ -133,6 +133,8 @@ class LabTool(object):
         current_step = 1
         current_tick = 0
 
+        measures = []
+
         # FSM working loop...
         while bode_state is not LabTool.BodeStates.DONE:
 
@@ -186,8 +188,10 @@ class LabTool(object):
                     bode_state = LabTool.BodeStates.DOWNLOAD_DATA
 
             elif bode_state is LabTool.BodeStates.DOWNLOAD_DATA:
-                # TODO: Agregar la parte de que descargue los datos y los transforme
-                # TODO: usando algun algoritmo, me faltan tambien esos algoritmos jeje!
+                input_vpp = float(oscilloscope.measure_vpp(input_channel))
+                output_vpp = float(oscilloscope.measure_vpp(output_channel))
+
+                ratio_db = float(oscilloscope.measure_vratio(output_channel, input_channel))
                 pass
 
             elif bode_state is LabTool.BodeStates.VERIFY_DONE:
@@ -198,4 +202,4 @@ class LabTool(object):
                     current_step += 1
                     bode_state = LabTool.BodeStates.STEP_SETUP
 
-        # TODO: Return resultado
+        return measures
