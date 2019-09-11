@@ -4,7 +4,7 @@ LabTool module with a list of the available devices
 
 
 class LabTool(object):
-    """ LabTool available devices """
+    """ LabTool static methods b b """
 
     # Available devices in the LabTool
     available_oscilloscopes = []

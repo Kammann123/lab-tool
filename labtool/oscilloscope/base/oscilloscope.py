@@ -16,7 +16,7 @@ from enum import Enum
 
 
 # labtool project modules
-from labtool.instrument import Instrument
+from labtool.base.instrument import Instrument
 
 
 ########################################
@@ -86,7 +86,7 @@ class Oscilloscope(Instrument, ABC):
     to be recognized by the labtool """
 
     ###################
-    # COMMON COMMANDS
+    # COMMON COMMANDS #
     ###################
 
     @abstractmethod
@@ -267,3 +267,105 @@ class Oscilloscope(Instrument, ABC):
     def digitize(self, source: Sources):
         """ Acquires the waveform of a selected channel using the current settings. """
         pass
+
+    ###########################
+    # SUBSYSTEM SETUP METHODS #
+    ###########################
+
+    def setup_timebase(self, setup: TimebaseSetup):
+        """ Sets up all the parameters of the timebase subsystem using a class
+        which contains the parameters values. """
+        if setup.mode is not None:
+            self.timebase_mode(setup.mode)
+        if setup.range is not None:
+            self.timebase_range(setup.range)
+        if setup.scale is not None:
+            self.timebase_scale(setup.scale)
+
+    def setup_trigger(self, setup: TriggerSetup):
+        """ Sets up all the parameters of the trigger subsystem using a class
+        which contains the parameter values. """
+        if setup.mode is not None:
+            self.trigger_mode(setup.mode)
+        if setup.sweep is not None:
+            self.trigger_sweep(setup.sweep)
+        if setup.level is not None:
+            self.trigger_edge_level(setup.level)
+        if setup.source is not None:
+            self.trigger_edge_source(setup.source)
+        if setup.slope is not None:
+            self.trigger_edge_slope(setup.slope)
+
+    def setup_channel(self, channel: int, setup: ChannelSetup):
+        """ Sets up all the parameters of a channel by one using a
+        class containing the parameter values. """
+        if setup.bandwidth_limit is not None:
+            self.bandwidth_limit(channel, setup.bandwidth_limit)
+        if setup.coupling is not None:
+            self.coupling(channel, setup.coupling)
+        if setup.probe is not None:
+            self.probe(channel, setup.probe)
+        if setup.range is not None:
+            self.range(channel, setup.range)
+        if setup.scale is not None:
+            self.scale(channel, setup.scale)
+        if setup.display is not None:
+            self.display(channel, setup.display)
+        if setup.offset is not None:
+            self.offset(channel, setup.offset)
+
+
+##############################
+# Oscilloscope setup classes #
+##############################
+
+""" Note: If any of the parameters set in the Setup classes has a None value, then
+    setting up that option in the oscilloscope channel will be omitted. """
+
+
+class ChannelSetup(object):
+    """ Channel setup values """
+
+    def __init__(self,
+                 bandwidth_limit: BandwidthLimit,
+                 coupling: Coupling,
+                 probe: float,
+                 range_value: float,
+                 scale: float,
+                 display: bool,
+                 offset: float):
+        self.bandwidth_limit = bandwidth_limit
+        self.coupling = coupling
+        self.probe = probe
+        self.range = range_value
+        self.scale = scale
+        self.display = display
+        self.offset = offset
+
+
+class TriggerSetup(object):
+    """ Trigger setup values """
+
+    def __init__(self,
+                 mode: TriggerMode,
+                 sweep: TriggerSweep,
+                 level: float,
+                 source: Sources,
+                 slope: TriggerSlope):
+        self.mode = mode
+        self.sweep = sweep
+        self.level = level
+        self.source = source
+        self.slope = slope
+
+
+class TimebaseSetup(object):
+    """ Timebase setup values """
+
+    def __init__(self,
+                 mode: TimebaseMode,
+                 time_range: float,
+                 time_scale: float):
+        self.mode = mode
+        self.range = time_range
+        self.scale = time_scale
