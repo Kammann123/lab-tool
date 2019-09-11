@@ -39,11 +39,6 @@ class Coupling(Enum):
     DC = "DC"
 
 
-class Display(Enum):
-    ON = "ON"
-    OFF = "OFF"
-
-
 class TimebaseMode(Enum):
     Main = "Main"
     Delayed = "Delayed"
@@ -60,7 +55,14 @@ class TriggerSweep(Enum):
     Normal = "Normal"
 
 
-class TriggerSource(Enum):
+class TriggerSlope(Enum):
+    Negative = "Negative"
+    Positive = "Positive"
+    Either = "Either"
+    Alternate = "Alternate"
+
+
+class Sources(Enum):
     Channel_1 = "Channel_1"
     Channel_2 = "Channel_2"
     Channel_3 = "Channel_3"
@@ -69,11 +71,10 @@ class TriggerSource(Enum):
     Line = "Line"
 
 
-class TriggerSlope(Enum):
-    Negative = "Negative"
-    Positive = "Positive"
-    Either = "Either"
-    Alternate = "Alternate"
+class WaveformFormat(Enum):
+    Word = "WORD"
+    Byte = "BYTE"
+    Ascii = "ASCII"
 
 
 ###########################
@@ -167,7 +168,7 @@ class Oscilloscope(Instrument, ABC):
         pass
 
     @abstractmethod
-    def display(self, channel: int, status: Display):
+    def display(self, channel: int, status: bool):
         """ Sets the Channel Status in the oscilloscope's display """
         pass
 
@@ -215,11 +216,54 @@ class Oscilloscope(Instrument, ABC):
         pass
 
     @abstractmethod
-    def trigger_edge_source(self, source: TriggerSource):
+    def trigger_edge_source(self, source: Sources):
         """ Setting the edge triggering source """
         pass
 
     @abstractmethod
     def trigger_edge_slope(self, slope: TriggerSlope):
         """ Setting the edge triggering slope """
+        pass
+
+    #####################
+    # WAVEFORM COMMANDS #
+    #####################
+
+    @abstractmethod
+    def waveform_source(self, source: Sources):
+        """ Sets the source from which waveform data will be captured """
+        pass
+
+    @abstractmethod
+    def waveform_unsigned(self, unsigned: bool):
+        """ Sets whether byte packets are transferred as signed or unsigned """
+        pass
+
+    @abstractmethod
+    def waveform_format(self, waveform_format: WaveformFormat):
+        """ Sets the format of data being transferred from the waveform"""
+        pass
+
+    @abstractmethod
+    def waveform_points(self, points: int):
+        """ Sets the number of points to be taken from the waveform data """
+        pass
+
+    @abstractmethod
+    def waveform_data(self):
+        """ Returns the waveform data """
+        pass
+
+    @abstractmethod
+    def waveform_preamble(self):
+        """ Returns the waveform data preamble used to decode byte data """
+        pass
+
+    #####################
+    # DIGITIZE COMMANDS #
+    #####################
+
+    @abstractmethod
+    def digitize(self, source: Sources):
+        """ Acquires the waveform of a selected channel using the current settings. """
         pass
