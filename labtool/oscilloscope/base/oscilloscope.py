@@ -16,7 +16,73 @@ from enum import Enum
 
 
 # labtool project modules
-from labtool.instrument import Instrument
+from labtool.base.instrument import Instrument
+
+
+##############################
+# Oscilloscope setup classes #
+##############################
+
+""" Note: If any of the parameters set in the Setup classes has a None value, then
+    setting up that option in the oscilloscope channel will be omitted. """
+
+
+class AcquireSetup(object):
+    """ Acquire setup values """
+
+    def __init__(self,
+                 acquire_mode=None,
+                 acquire_average_count=None):
+        self.mode = acquire_mode
+        self.average_count = acquire_average_count
+
+
+class ChannelSetup(object):
+    """ Channel setup values """
+
+    def __init__(self,
+                 bandwidth_limit=None,
+                 coupling=None,
+                 probe=None,
+                 range_value=None,
+                 scale=None,
+                 display=None,
+                 offset=None):
+        self.bandwidth_limit = bandwidth_limit
+        self.coupling = coupling
+        self.probe = probe
+        self.range = range_value
+        self.scale = scale
+        self.display = display
+        self.offset = offset
+
+
+class TriggerSetup(object):
+    """ Trigger setup values """
+
+    def __init__(self,
+                 mode=None,
+                 sweep=None,
+                 level=None,
+                 source=None,
+                 slope=None):
+        self.mode = mode
+        self.sweep = sweep
+        self.level = level
+        self.source = source
+        self.slope = slope
+
+
+class TimebaseSetup(object):
+    """ Timebase setup values """
+
+    def __init__(self,
+                 mode=None,
+                 time_range=None,
+                 time_scale=None):
+        self.mode = mode
+        self.range = time_range
+        self.scale = time_scale
 
 
 ########################################
@@ -67,6 +133,8 @@ class Sources(Enum):
     Channel_2 = "Channel_2"
     Channel_3 = "Channel_3"
     Channel_4 = "Channel_4"
+    Channel_5 = "Channel_5"
+    Channel_6 = "Channel_6"
     External = "External"
     Line = "Line"
 
@@ -86,7 +154,7 @@ class Oscilloscope(Instrument, ABC):
     to be recognized by the labtool """
 
     ###################
-    # COMMON COMMANDS
+    # COMMON COMMANDS #
     ###################
 
     @abstractmethod
@@ -267,3 +335,94 @@ class Oscilloscope(Instrument, ABC):
     def digitize(self, source: Sources):
         """ Acquires the waveform of a selected channel using the current settings. """
         pass
+
+    ####################
+    # MEASURE COMMANDS #
+    ####################
+
+    @abstractmethod
+    def measure_vpp(self, source: Sources):
+        """ Measures the peak to peak voltage of the given source """
+        pass
+
+    @abstractmethod
+    def measure_vratio(self, target_source: Sources, reference_source: Sources):
+        """ Measures the voltage ratio between the target and the reference sources. """
+        pass
+
+    @abstractmethod
+    def measure_phase(self, target_sources: Sources, reference_sources: Sources):
+        """ Measures the phase of the target source """
+        pass
+
+    ##################
+    # HELPER METHODS #
+    ##################
+
+    @staticmethod
+    def source_to_channel(source: Sources):
+        """ Returns the channel number when receiving the Source Enum data type """
+        if source.value[:-1] == "Channel_":
+            return int(source.value[-1])
+        return None
+
+    @staticmethod
+    def channel_to_source(number: int):
+        """ Returns the source enum definition from the channel number """
+        formatted_channel = "Channel_{}".format(number)
+        if formatted_channel in [source.value for source in Sources]:
+            return formatted_channel
+        return None
+
+    ###########################
+    # SUBSYSTEM SETUP METHODS #
+    ###########################
+
+    def setup_acquire(self, setup: AcquireSetup):
+        """ Sets up all the parameters of the acquire subsystem """
+        if setup.mode is not None:
+            self.acquire_mode(setup.mode)
+        if setup.average_count is not None:
+            self.acquire_average_count(setup.average_count)
+
+    def setup_timebase(self, setup: TimebaseSetup):
+        """ Sets up all the parameters of the timebase subsystem using a class
+        which contains the parameters values. """
+        if setup.mode is not None:
+            self.timebase_mode(setup.mode)
+        if setup.range is not None:
+            self.timebase_range(setup.range)
+        if setup.scale is not None:
+            self.timebase_scale(setup.scale)
+
+    def setup_trigger(self, setup: TriggerSetup):
+        """ Sets up all the parameters of the trigger subsystem using a class
+        which contains the parameter values. """
+        if setup.mode is not None:
+            self.trigger_mode(setup.mode)
+        if setup.sweep is not None:
+            self.trigger_sweep(setup.sweep)
+        if setup.level is not None:
+            self.trigger_edge_level(setup.level)
+        if setup.source is not None:
+            self.trigger_edge_source(setup.source)
+        if setup.slope is not None:
+            self.trigger_edge_slope(setup.slope)
+
+    def setup_channel(self, channel: int, setup: ChannelSetup):
+        """ Sets up all the parameters of a channel by one using a
+        class containing the parameter values. """
+        if setup.bandwidth_limit is not None:
+            self.bandwidth_limit(channel, setup.bandwidth_limit)
+        if setup.coupling is not None:
+            self.coupling(channel, setup.coupling)
+        if setup.probe is not None:
+            self.probe(channel, setup.probe)
+        if setup.range is not None:
+            self.range(channel, setup.range)
+        if setup.scale is not None:
+            self.scale(channel, setup.scale)
+        if setup.display is not None:
+            self.display(channel, setup.display)
+        if setup.offset is not None:
+            self.offset(channel, setup.offset)

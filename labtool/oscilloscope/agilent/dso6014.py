@@ -7,13 +7,15 @@ from labtool.oscilloscope.base.oscilloscope import Oscilloscope
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
 from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
 from labtool.oscilloscope.base.oscilloscope import Coupling
-from labtool.oscilloscope.base.oscilloscope import Display
 from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 from labtool.oscilloscope.base.oscilloscope import TriggerMode
 from labtool.oscilloscope.base.oscilloscope import Sources
 from labtool.oscilloscope.base.oscilloscope import TriggerSlope
 from labtool.oscilloscope.base.oscilloscope import TriggerSweep
 from labtool.oscilloscope.base.oscilloscope import WaveformFormat
+from labtool.oscilloscope.base.oscilloscope import AcquireMode
+
+from labtool.tool import LabTool
 
 
 ######################
@@ -214,7 +216,7 @@ class AgilentDSO6014(Oscilloscope):
 
     def trigger_edge_slope(self, slope: TriggerSlope):
         """ Setting the edge triggering slope """
-        self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slopes]))
+        self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slope]))
 
     #####################
     # WAVEFORM COMMANDS #
@@ -238,7 +240,8 @@ class AgilentDSO6014(Oscilloscope):
 
     def waveform_points(self, points: int):
         """ Sets the number of points to be taken from the waveform data """
-        self.resource.write(":WAV:POINT {}".format(points))
+        self.resource.write(":WAV:POIN:MODE RAW")
+        self.resource.write(":WAV:POIN {}".format(points))
 
     def waveform_data(self):
         """ Returns the waveform data """
@@ -255,6 +258,32 @@ class AgilentDSO6014(Oscilloscope):
     def digitize(self, source: Sources):
         """ Acquires the waveform of a selected channel using the current settings. """
         self.resource.write(":DIG {}".format(self.sources[source]))
+
+    ####################
+    # MEASURE COMMANDS #
+    ####################
+
+    def measure_vpp(self, source: Sources):
+        """ Measures the peak to peak voltage of the given source """
+        return self.resource.query(":MEAS:VPP? {}".format(self.sources[source]))
+
+    def measure_vratio(self, target_source: Sources, reference_source: Sources):
+        """ Measures the voltage ratio between the target and the reference sources. """
+        return self.resource.query(
+            ":MEAS:VRAT? {}, {}".format(
+                self.sources[target_source],
+                self.sources[reference_source]
+            )
+        )
+
+    def measure_phase(self, target_source: Sources, reference_source: Sources):
+        """ Measures the phase of the target source """
+        return self.resource.query(
+            ":MEAS:PHAS? {}, {}".format(
+                self.sources[target_source],
+                self.sources[reference_source]
+            )
+        )
 
 
 #############
@@ -274,3 +303,7 @@ def is_power_of(target: int, power: int) -> bool:
         return True
     else:
         return False
+
+
+# Subscribing the new instrument to the lab-tool register
+LabTool.add_oscilloscope(AgilentDSO6014)
