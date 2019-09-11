@@ -19,3 +19,4 @@ class Oscilloscope(Instrument, ABC):
     # Oscilloscope static parameters
     brand = "OscilloscopeBrand"
     model = "OscilloscopeModel"
+

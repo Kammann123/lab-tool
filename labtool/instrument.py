@@ -16,7 +16,7 @@ class ResourceNotFound(Exception):
 class Instrument(object):
     """ Instrument base class """
 
-    IDN = "Instrument's IDN"
+    idn = "Instrument's IDN"
 
     def __init__(self, resource_name):
         """ A Resource is opened and its reference will be saved, but if there is
