@@ -186,6 +186,8 @@ class LabTool(object):
                     bode_state = LabTool.BodeStates.DOWNLOAD_DATA
 
             elif bode_state is LabTool.BodeStates.DOWNLOAD_DATA:
+                # TODO: Agregar la parte de que descargue los datos y los transforme
+                # TODO: usando algun algoritmo, me faltan tambien esos algoritmos jeje!
                 pass
 
             elif bode_state is LabTool.BodeStates.VERIFY_DONE:
@@ -195,3 +197,5 @@ class LabTool(object):
                 else:
                     current_step += 1
                     bode_state = LabTool.BodeStates.STEP_SETUP
+
+        # TODO: Return resultado

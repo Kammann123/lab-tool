@@ -268,6 +268,25 @@ class Oscilloscope(Instrument, ABC):
         """ Acquires the waveform of a selected channel using the current settings. """
         pass
 
+    ####################
+    # MEASURE COMMANDS #
+    ####################
+
+    @abstractmethod
+    def measure_vpp(self, source: Sources):
+        """ Measures the peak to peak voltage of the given source """
+        pass
+
+    @abstractmethod
+    def measure_vratio(self, target_source: Sources, reference_source: Sources):
+        """ Measures the voltage ratio between the target and the reference sources. """
+        pass
+
+    @abstractmethod
+    def measure_phase(self, target_sources: Sources, reference_sources: Sources):
+        """ Measures the phase of the target source """
+        pass
+
     ###########################
     # SUBSYSTEM SETUP METHODS #
     ###########################
