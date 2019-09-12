@@ -17,6 +17,7 @@ from labtool.oscilloscope.base.oscilloscope import Sources
 
 from labtool.generator.base.generator import Waveform
 from labtool.generator.base.generator import OutputLoad
+from labtool.generator.base.generator import OutputMode
 
 from labtool.base.instrument import InstrumentType
 from labtool.base.instrument import Instrument
@@ -197,6 +198,7 @@ class LabTool(object):
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
                 gen.set_output_load(None, OutputLoad.HighZ)
                 gen.set_amplitude(generator_setup["amplitude"])
+                gen.set_output_mode(OutputMode.ON)
 
                 bode_state = LabTool.BodeStates.STEP_SETUP
 
