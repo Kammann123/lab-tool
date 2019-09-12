@@ -19,72 +19,6 @@ from enum import Enum
 from labtool.base.instrument import Instrument
 
 
-##############################
-# Oscilloscope setup classes #
-##############################
-
-""" Note: If any of the parameters set in the Setup classes has a None value, then
-    setting up that option in the oscilloscope channel will be omitted. """
-
-
-class AcquireSetup(object):
-    """ Acquire setup values """
-
-    def __init__(self,
-                 acquire_mode=None,
-                 acquire_average_count=None):
-        self.mode = acquire_mode
-        self.average_count = acquire_average_count
-
-
-class ChannelSetup(object):
-    """ Channel setup values """
-
-    def __init__(self,
-                 bandwidth_limit=None,
-                 coupling=None,
-                 probe=None,
-                 range_value=None,
-                 scale=None,
-                 display=None,
-                 offset=None):
-        self.bandwidth_limit = bandwidth_limit
-        self.coupling = coupling
-        self.probe = probe
-        self.range = range_value
-        self.scale = scale
-        self.display = display
-        self.offset = offset
-
-
-class TriggerSetup(object):
-    """ Trigger setup values """
-
-    def __init__(self,
-                 mode=None,
-                 sweep=None,
-                 level=None,
-                 source=None,
-                 slope=None):
-        self.mode = mode
-        self.sweep = sweep
-        self.level = level
-        self.source = source
-        self.slope = slope
-
-
-class TimebaseSetup(object):
-    """ Timebase setup values """
-
-    def __init__(self,
-                 mode=None,
-                 time_range=None,
-                 time_scale=None):
-        self.mode = mode
-        self.range = time_range
-        self.scale = time_scale
-
-
 ########################################
 # Oscilloscope Enumeration Definitions #
 ########################################
@@ -148,10 +82,14 @@ class WaveformFormat(Enum):
 ###########################
 # Oscilloscope Base Class #
 ###########################
+
 class Oscilloscope(Instrument, ABC):
     """ Oscilloscope Base Class.
     When inheriting to define a child class, static parameters are needed
     to be recognized by the labtool """
+
+    # Oscilloscope information
+    type = "Oscilloscope"
 
     ###################
     # COMMON COMMANDS #
@@ -378,51 +316,76 @@ class Oscilloscope(Instrument, ABC):
     # SUBSYSTEM SETUP METHODS #
     ###########################
 
-    def setup_acquire(self, setup: AcquireSetup):
-        """ Sets up all the parameters of the acquire subsystem """
-        if setup.mode is not None:
-            self.acquire_mode(setup.mode)
-        if setup.average_count is not None:
-            self.acquire_average_count(setup.average_count)
+    def setup_acquire(self, **kwargs):
+        """ Sets up all the parameters of the acquire subsystem.
+            [Options]
+                + acquire-mode: The AcquireMode used for the oscilloscope.
+                + average-count: The number of sameples used to averaging the signal shown in the screen.
+                """
+        if "acquire-mode" in kwargs.keys():
+            self.acquire_mode(kwargs["acquire-mode"])
+        if "average-count" in kwargs.keys():
+            self.acquire_average_count(kwargs["average-count"])
 
-    def setup_timebase(self, setup: TimebaseSetup):
+    def setup_timebase(self, **kwargs):
         """ Sets up all the parameters of the timebase subsystem using a class
-        which contains the parameters values. """
-        if setup.mode is not None:
-            self.timebase_mode(setup.mode)
-        if setup.range is not None:
-            self.timebase_range(setup.range)
-        if setup.scale is not None:
-            self.timebase_scale(setup.scale)
+        which contains the parameters values.
+            [Options]
+                + timebase-mode: The TimebaseMode used for the oscilloscope.
+                + timebase-range: Sets the range of the timebase.
+                + timebase-scale: Sets the scale of the timebase.
+                """
+        if "timebase-mode" in kwargs.keys():
+            self.timebase_mode(kwargs["timebase-mode"])
+        if "timebase-range" in kwargs.keys():
+            self.timebase_range(kwargs["timebase-range"])
+        if "timebase-scale" in kwargs.keys():
+            self.timebase_scale(kwargs["timebase-scale"])
 
-    def setup_trigger(self, setup: TriggerSetup):
+    def setup_trigger(self, **kwargs):
         """ Sets up all the parameters of the trigger subsystem using a class
-        which contains the parameter values. """
-        if setup.mode is not None:
-            self.trigger_mode(setup.mode)
-        if setup.sweep is not None:
-            self.trigger_sweep(setup.sweep)
-        if setup.level is not None:
-            self.trigger_edge_level(setup.level)
-        if setup.source is not None:
-            self.trigger_edge_source(setup.source)
-        if setup.slope is not None:
-            self.trigger_edge_slope(setup.slope)
+        which contains the parameter values.
+            [Options]
+                + trigger-mode: TriggerMode
+                + trigger-sweep: TriggerSweep
+                + trigger-edge-level: Level value
+                + trigger-edge-source: Source
+                + trigger-edge-slope: TriggerSlope
+                """
+        if "trigger-mode" in kwargs.keys():
+            self.trigger_mode(kwargs["trigger-mode"])
+        if "trigger-sweep" in kwargs.keys():
+            self.trigger_sweep(kwargs["trigger-sweep"])
+        if "trigger-edge-level" in kwargs.keys():
+            self.trigger_edge_level(kwargs["trigger-edge-level"])
+        if "trigger-edge-source" in kwargs.keys():
+            self.trigger_edge_source(kwargs["trigger-edge-source"])
+        if "trigger-edge-slope" in kwargs.keys():
+            self.trigger_edge_slope(kwargs["trigger-edge-slope"])
 
-    def setup_channel(self, channel: int, setup: ChannelSetup):
+    def setup_channel(self, channel: int, **kwargs):
         """ Sets up all the parameters of a channel by one using a
-        class containing the parameter values. """
-        if setup.bandwidth_limit is not None:
-            self.bandwidth_limit(channel, setup.bandwidth_limit)
-        if setup.coupling is not None:
-            self.coupling(channel, setup.coupling)
-        if setup.probe is not None:
-            self.probe(channel, setup.probe)
-        if setup.range is not None:
-            self.range(channel, setup.range)
-        if setup.scale is not None:
-            self.scale(channel, setup.scale)
-        if setup.display is not None:
-            self.display(channel, setup.display)
-        if setup.offset is not None:
-            self.offset(channel, setup.offset)
+        class containing the parameter values.
+            [Options]
+                + bandwidth_limit: BandwidthLimit
+                + coupling: Coupling
+                + probe: Probe
+                + range: Range value
+                + scale: Scale value
+                + display: Boolean value if should be displayed
+                + offset: Offset value
+                """
+        if "bandwidth_limit" in kwargs.keys():
+            self.bandwidth_limit(channel, kwargs["bandwidth_limit"])
+        if "coupling" in kwargs.keys():
+            self.coupling(channel, kwargs["coupling"])
+        if "probe" in kwargs.keys():
+            self.probe(channel, kwargs["probe"])
+        if "range" in kwargs.keys():
+            self.range(channel, kwargs["range"])
+        if "scale" in kwargs.keys():
+            self.scale(channel, kwargs["scale"])
+        if "display" in kwargs.keys():
+            self.display(channel, kwargs["display"])
+        if "offset" in kwargs.keys():
+            self.offset(channel, kwargs["offset"])

@@ -71,9 +71,25 @@ class Agilent33220A(Generator):
     # APPLY COMMANDS #
     ##################
 
-    def generate_signal(self, waveform: Waveform, freq: float, amplitude: float, offset: float):
-        """Generates a signal controlled by received parameters"""
-        self.resource.write("APPLy:{} {}, {}, {}".format(self.waveforms[waveform], freq, amplitude, offset))
+    def generate_signal(self, **kwargs):
+        """ Generates a signal controlled by received parameters
+            [Options]
+                + waveform: Waveform
+                + frequency: Frequency value
+                + amplitude: Amplitude value
+                + offset: Offset value
+                """
+        for dependency in ["waveform", "frequency", "amplitude", "offset"]:
+            if dependency not in kwargs.keys():
+                raise ValueError("Option dependency needed to run the generate_signal() routine: {}".format(dependency))
+
+        self.resource.write(
+            "APPLy:{} {}, {}, {}".format(
+                self.waveforms[kwargs["waveform"]],
+                kwargs["frequency"],
+                kwargs["amplitude"],
+                kwargs["offset"])
+        )
 
     ############################
     # OUTPUT CONFIG COMMANDS   #

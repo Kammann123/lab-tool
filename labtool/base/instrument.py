@@ -32,6 +32,7 @@ class Instrument(object):
     # Instrument information, static values for each class
     brand = "Instrument's Brand"
     model = "Instrument's Model"
+    type = "Instrument's Type"
 
     def __init__(self, resource_name):
         """ A Resource is opened and its reference will be saved, but if there is

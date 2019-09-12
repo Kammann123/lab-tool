@@ -57,6 +57,9 @@ class Generator(Instrument, ABC):
     When inheriting to define a child class, static parameters are needed
     to be recognized by the labtool """
 
+    # Generator information
+    type = "Generator"
+
     ###################
     # COMMON COMMANDS #
     ###################
@@ -76,12 +79,18 @@ class Generator(Instrument, ABC):
         """ Returns a string with an generator's identifier. """
         pass
 
-    #####################
+    ##################
     # APPLY COMMANDS #
-    #####################
+    ##################
     @abstractmethod
-    def generate_signal(self, waveform: Waveform, freq: float, amplitude: float, offset: float):
-        """ Generates a signal controlled by received parameters """
+    def generate_signal(self, **kwargs):
+        """ Generates a signal controlled by received parameters
+            [Options]
+                + waveform: Waveform
+                + frequency: Frequency value
+                + amplitude: Amplitude value
+                + offset: Offset value
+                """
         pass
 
     ############################
