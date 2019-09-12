@@ -6,6 +6,9 @@ LabTool module with a list of the available devices
 from enum import Enum
 from time import sleep
 
+# third-party modules
+import pyvisa
+
 # labtool project modules
 from labtool.oscilloscope.base.oscilloscope import Oscilloscope
 from labtool.generator.base.generator import Generator
@@ -14,6 +17,19 @@ from labtool.oscilloscope.base.oscilloscope import Sources
 
 from labtool.generator.base.generator import Waveform
 from labtool.generator.base.generator import OutputLoad
+
+from labtool.base.instrument import InstrumentType
+from labtool.base.instrument import Instrument
+
+
+######################
+# LabTool Exceptions #
+######################
+
+class DeviceNotFound(Exception):
+    def __init__(self):
+        super(DeviceNotFound, self).__init__("Could not find any device with the given instrument type."
+                                             + " Verify the device connection or if the module has been imported.")
 
 
 ###################################
@@ -35,6 +51,38 @@ class LabTool(object):
         STEP_SETUP = "Step setup"
         DOWNLOAD_DATA = "Download data"
         DONE = "Done"
+
+    @staticmethod
+    def open_device(instrument_type: InstrumentType) -> Instrument:
+        """ open_device() returns an instance of an Instrument interface by detecting all connected models.
+            IMPORTANT! In order to detect instruments, devices should be imported for
+            LabTool to be able to detect them.
+
+            Note: This first version runs opening any detected device corresponding with the intrsument type.
+
+            [OPTIONS]
+                + instrument_type: What kind of instrument should be detected
+                """
+        # Creating the resource manager and interface
+        resource_manager = pyvisa.ResourceManager()
+        resources = resource_manager.list_resources()
+        for resource in resources:
+            # Requesting the standard visa identification code
+            interface = resource_manager.open_resource(resource)
+            model_name = interface.query("*IDN?").split(",")[1]
+            interface.close()
+            # Searching an interface for that device model
+            if instrument_type is InstrumentType.Oscilloscope:
+                for oscilloscope in LabTool.available_oscilloscopes:
+                    if oscilloscope.model == model_name:
+                        return oscilloscope(resource)
+            elif instrument_type is InstrumentType.Generator:
+                for generator in LabTool.available_generators:
+                    if generator.model == model_name:
+                        return generator(resource)
+
+        # Raising exception...
+        raise DeviceNotFound
 
     @staticmethod
     def add_oscilloscope(oscilloscope):
@@ -81,12 +129,12 @@ class LabTool(object):
             else:
                 oscilloscope.scale(Oscilloscope.source_to_channel(source), pattern_value[current_value])
                 current_value += 1
-                sleep(0.1)
+                sleep(0.4)
 
     @staticmethod
     def compute_frequency(step: int, bode_setup: dict):
-        min_frequency = bode_setup["start_frequency"]
-        max_frequency = bode_setup["stop_frequency"]
+        min_frequency = bode_setup["start-frequency"]
+        max_frequency = bode_setup["stop-frequency"]
         samples = bode_setup["samples"]
         return (max_frequency - min_frequency) * step / samples + min_frequency
 
@@ -154,7 +202,7 @@ class LabTool(object):
 
             elif bode_state is LabTool.BodeStates.STEP_SETUP:
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
-                osc.timebase_range(2 / LabTool.compute_frequency(bode_step, bode_setup))
+                osc.timebase_range(3 / LabTool.compute_frequency(bode_step, bode_setup))
 
                 LabTool.source_scale(osc, input_channel)
                 LabTool.source_scale(osc, output_channel)
@@ -169,7 +217,7 @@ class LabTool(object):
                 phase = float(osc.measure_phase(output_channel, input_channel))
                 bode_measures.append(
                     {
-                        "frequency": current_frequency,
+                        "frequency": LabTool.compute_frequency(bode_step, bode_setup),
                         "input-vpp": input_vpp,
                         "output-vpp": output_vpp,
                         "bode-module": ratio,
@@ -178,7 +226,7 @@ class LabTool(object):
                 )
 
                 bode_step += 1
-                if bode_step >= bode_step["samples"]:
+                if bode_step >= bode_setup["samples"]:
                     bode_state = LabTool.BodeStates.DONE
                 else:
                     bode_state = LabTool.BodeStates.STEP_SETUP

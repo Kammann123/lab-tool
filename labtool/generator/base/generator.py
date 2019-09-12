@@ -15,7 +15,8 @@ from abc import abstractmethod
 from enum import Enum
 
 # labtool project modules
-from labtool.instrument import Instrument
+from labtool.base.instrument import Instrument
+from labtool.base.instrument import InstrumentType
 
 
 #####################################
@@ -58,7 +59,7 @@ class Generator(Instrument, ABC):
     to be recognized by the labtool """
 
     # Generator information
-    type = "Generator"
+    type = InstrumentType.Generator
 
     ###################
     # COMMON COMMANDS #

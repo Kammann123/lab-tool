@@ -12,6 +12,8 @@ import pyvisa
 
 # labtool project modules
 from labtool.base.instrument import Instrument
+from labtool.base.instrument import InstrumentType
+
 from labtool.oscilloscope.base.oscilloscope import Sources
 
 from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
@@ -76,42 +78,12 @@ def instruments_to_console():
     console(message)
 
 
-def open_device() -> Instrument:
-    """ Returns an instance of a Instrument selected by the user
-    from the list of resources detected with the PyVisa package. """
-
-    # Creating the ResourceManager instance and listing the resources
-    resource_manager = pyvisa.ResourceManager()
-    resources = resource_manager.list_resources()
-
-    try:
-        # Device selection
-        console_separator()
-        resources_to_console(resources)
-        resources_selection = int(input("[lab-tool] >> Device selection: "))
-
-        # Model selected
-        console_separator()
-        instruments_to_console()
-        instrument_selection = int(input("[lab-tool] >> Instrument selection: "))
-
-        # Instance building
-        if instrument_selection < len(LabTool.available_oscilloscopes):
-            builder = LabTool.available_oscilloscopes[instrument_selection]
-        else:
-            builder = LabTool.available_generators[instrument_selection - len(LabTool.available_oscilloscopes)]
-
-        return builder(resources[resources_selection])
-    except:
-        console("I give up... \nHaha. Error in the input value! (Or some other thing... who knows)")
-
-
 if __name__ == "__main__":
     console("Welcome to the LabTool! In order to measure a bode diagram, you will need an oscilloscope and a generator.")
 
     # Opening needed devices
-    oscilloscope = open_device()
-    generator = open_device()
+    oscilloscope = LabTool.open_device(InstrumentType.Oscilloscope)
+    generator = LabTool.open_device(InstrumentType.Generator)
 
     # Setup or configuration objects
     input_channel_setup = output_channel_setup = {
@@ -141,9 +113,9 @@ if __name__ == "__main__":
     }
 
     bode_setup = {
-        "delay": 0.1,
-        "start-frequency": 100,
-        "stop-frequency": 1000000,
+        "delay": 0.3,
+        "start-frequency": 400,
+        "stop-frequency": 40000,
         "samples": 60
     }
 
@@ -163,9 +135,10 @@ if __name__ == "__main__":
         Sources.Channel_2, output_channel_setup
     )
 
-    pyplot.plot([measure["frequency"] for measure in measures], [measure["bode_module"] for measure in measures])
-    pyplot.plot([measure["frequency"] for measure in measures], [measure["bode_phase"] for measure in measures])
-    pyplot.show()
+    frequency = [measure["frequency"] for measure in measures]
+    module = [measure["bode-module"] for measure in measures]
+    phase = [measure["bode-phase"] for measure in measures]
 
-    console("Press any key to exit...")
-    input()
+    print(frequency)
+    print(module)
+    print(phase)

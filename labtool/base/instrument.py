@@ -2,6 +2,9 @@
 Instrument Base Class to define a common or standard way to identify instruments.
 """
 
+# python native modules
+from enum import Enum
+
 # third-party modules
 import pyvisa
 
@@ -20,6 +23,10 @@ class ResourceNotFound(Exception):
 ######################################
 # Instrument enumeration definitions #
 ######################################
+
+class InstrumentType(Enum):
+    Oscilloscope = "Oscilloscope"
+    Generator = "Generator"
 
 
 #########################

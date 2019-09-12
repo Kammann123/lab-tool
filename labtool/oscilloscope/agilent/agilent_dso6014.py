@@ -37,7 +37,7 @@ class AgilentDSO6014(Oscilloscope):
 
     # Instrument information
     brand = "AGILENT"
-    model = "DSO6014"
+    model = "DSO6014A"
 
     # Internal dictionaries of agilent syntax
     sources = {

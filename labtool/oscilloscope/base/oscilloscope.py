@@ -17,6 +17,7 @@ from enum import Enum
 
 # labtool project modules
 from labtool.base.instrument import Instrument
+from labtool.base.instrument import InstrumentType
 
 
 ########################################
@@ -89,7 +90,7 @@ class Oscilloscope(Instrument, ABC):
     to be recognized by the labtool """
 
     # Oscilloscope information
-    type = "Oscilloscope"
+    type = InstrumentType.Oscilloscope
 
     ###################
     # COMMON COMMANDS #

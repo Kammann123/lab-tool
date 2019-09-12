@@ -101,7 +101,7 @@ class Agilent33220A(Generator):
 
     def set_frequency(self, frequency: float):
         """ Changes output frequency """
-        self.resource.write("FREQuency {}".format(freq))
+        self.resource.write("FREQuency {}".format(frequency))
 
     def set_amplitude(self, amplitude: float):
         """ Changes output amplitude """
