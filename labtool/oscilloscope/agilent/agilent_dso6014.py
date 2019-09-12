@@ -127,11 +127,11 @@ class AgilentDSO6014(Oscilloscope):
     # ACQUIRE COMMANDS #
     ####################
 
-    def acquire_mode(self, mode: AcquireMode):
+    def set_acquire_mode(self, mode: AcquireMode):
         """ Sets the AcquireMode of the oscilloscope """
         self.resource.write(":ACQuire:TYPE {}".format(self.acquire_modes[mode]))
 
-    def acquire_average_count(self, count: int):
+    def set_acquire_average_count(self, count: int):
         """ Sets the amount of samples to be used when averaging the signal. """
         if type(count) != int:
             raise ValueError("Integer value expected for the average count.")
@@ -145,27 +145,31 @@ class AgilentDSO6014(Oscilloscope):
     # CHANNEL COMMANDS #
     ####################
 
-    def bandwidth_limit(self, channel: int, status: BandwidthLimit):
+    def set_bandwidth_limit(self, channel: int, status: BandwidthLimit):
         """ Sets the status of the BandwidthLimit """
         self.resource.write(":CHAN{}:BWL {}".format(channel, self.bandwidth_limits[status]))
 
-    def coupling(self, channel: int, status: Coupling):
+    def set_coupling(self, channel: int, status: Coupling):
         """ Sets the status of the Coupling """
         self.resource.write(":CHAN{}:COUP {}".format(channel, status.value))
 
-    def probe(self, channel: int, probe_value: int):
+    def set_probe(self, channel: int, probe_value: int):
         """ Sets the probe value of the channel """
         self.resource.write(":CHAN{}:PROB {}".format(channel, probe_value))
 
-    def range(self, channel: int, range_value: float):
+    def set_range(self, channel: int, range_value: float):
         """ Sets the range of the vertical axis of the channel """
         self.resource.write(":CHAN{}:RANG {}".format(channel, range_value))
 
-    def scale(self, channel: int, scale_value: float):
+    def get_range(self, channel: int) -> float:
+        """ Returns the range setting of the given channel """
+        return self.resource.query(":CHAN{}:RANG?".format(channel))
+
+    def set_scale(self, channel: int, scale_value: float):
         """ Sets the vertical scale of the channel """
         self.resource.write(":CHAN{}:SCAL {}".format(channel, scale_value))
 
-    def display(self, channel: int, status: bool):
+    def set_display(self, channel: int, status: bool):
         """ Sets the Channel Status in the oscilloscope's display """
         self.resource.write(
             ":CHAN{}:DISP {}".format(
@@ -174,7 +178,7 @@ class AgilentDSO6014(Oscilloscope):
             )
         )
 
-    def offset(self, channel: int, offset_value: float):
+    def set_offset(self, channel: int, offset_value: float):
         """ Sets the offset value of the channel in the display """
         self.resource.write(":CHAN{}:OFFS {}".format(channel, offset_value))
 
@@ -182,15 +186,15 @@ class AgilentDSO6014(Oscilloscope):
     # TIMEBASE COMMANDS #
     #####################
 
-    def timebase_mode(self, mode: TimebaseMode):
+    def set_timebase_mode(self, mode: TimebaseMode):
         """ Sets the timebase mode of the oscilloscope """
         self.resource.write(":TIMebase:MODE {}".format(self.timebase_modes[mode]))
 
-    def timebase_range(self, time_range: float):
+    def set_timebase_range(self, time_range: float):
         """ Sets the full range of the horizontal axis of the oscilloscope """
         self.resource.write(":TIMebase:RANGe {}".format(time_range))
 
-    def timebase_scale(self, scale_value: float):
+    def set_timebase_scale(self, scale_value: float):
         """ Sets the scale value of the time base """
         self.resource.write(":TIMebase:SCALe {}".format(scale_value))
 
@@ -198,23 +202,23 @@ class AgilentDSO6014(Oscilloscope):
     # TRIGGER COMMANDS #
     ####################
 
-    def trigger_mode(self, mode: TriggerMode):
+    def set_trigger_mode(self, mode: TriggerMode):
         """ Setting the trigger mode of the oscilloscope """
         self.resource.write(":TRIG:MODE {}".format(self.trigger_modes[mode]))
 
-    def trigger_sweep(self, sweep: TriggerSweep):
+    def set_trigger_sweep(self, sweep: TriggerSweep):
         """ Setting the trigger sweep of the oscilloscope """
         self.resource.write(":TRIG:SWE {}".format(self.trigger_sweeps[sweep]))
 
-    def trigger_edge_level(self, level_value: float):
+    def set_trigger_edge_level(self, level_value: float):
         """ Setting the level of the edge triggering mode """
         self.resource.write(":TRIG[:EDGE]:LEV {}".format(level_value))
 
-    def trigger_edge_source(self, source: Sources):
+    def set_trigger_edge_source(self, source: Sources):
         """ Setting the edge triggering source """
         self.resource.write(":TRIG[:EDGE]:SOUR {}".format(self.sources[source]))
 
-    def trigger_edge_slope(self, slope: TriggerSlope):
+    def set_trigger_edge_slope(self, slope: TriggerSlope):
         """ Setting the edge triggering slope """
         self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slope]))
 
@@ -222,11 +226,11 @@ class AgilentDSO6014(Oscilloscope):
     # WAVEFORM COMMANDS #
     #####################
 
-    def waveform_source(self, source: Sources):
+    def set_waveform_source(self, source: Sources):
         """ Sets the source from which waveform data will be captured """
         self.resource.write(":WAV:SOUR {}".format(self.sources[source]))
 
-    def waveform_unsigned(self, unsigned: bool):
+    def set_waveform_unsigned(self, unsigned: bool):
         """ Sets whether byte packets are transferred as signed or unsigned """
         self.resource.write(
             ":WAV:UNS {}".format(
@@ -234,20 +238,20 @@ class AgilentDSO6014(Oscilloscope):
             )
         )
 
-    def waveform_format(self, waveform_format: WaveformFormat):
+    def set_waveform_format(self, waveform_format: WaveformFormat):
         """ Sets the format of data being transferred from the waveform"""
         self.resource.write(":WAV:FORM {}".format(self.waveform_formats[waveform_format]))
 
-    def waveform_points(self, points: int):
+    def set_waveform_points(self, points: int):
         """ Sets the number of points to be taken from the waveform data """
         self.resource.write(":WAV:POIN:MODE RAW")
         self.resource.write(":WAV:POIN {}".format(points))
 
-    def waveform_data(self):
+    def set_waveform_data(self):
         """ Returns the waveform data """
         return self.resource.query(":WAV:DATA?")
 
-    def waveform_preamble(self):
+    def set_waveform_preamble(self):
         """ Returns the waveform data preamble used to decode byte data """
         return self.resource.query(":WAV:PRE?")
 

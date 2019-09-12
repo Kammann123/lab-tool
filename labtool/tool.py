@@ -119,6 +119,11 @@ class LabTool(object):
         }
 
     @staticmethod
+    def vertical_scale(oscilloscope: Oscilloscope, source: Sources):
+        """ Auto scaling the vertical axis of the Oscilloscope for the given source """
+        pass
+
+    @staticmethod
     def source_scale(oscilloscope: Oscilloscope, source: Sources):
         constant_limit = 1e3
         pattern_value = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50]
@@ -188,12 +193,14 @@ class LabTool(object):
         # FSM working loop...
         while bode_state is not LabTool.BodeStates.DONE:
             if bode_state is LabTool.BodeStates.INITIAL_SETUP:
+                osc.reset()
                 osc.setup_channel(osc.source_to_channel(input_channel), **input_channel_setup)
                 osc.setup_channel(osc.source_to_channel(output_channel), **output_channel_setup)
                 osc.setup_trigger(**trigger_setup)
                 osc.setup_timebase(**timebase_setup)
                 osc.setup_acquire(**acquire_setup)
 
+                gen.reset()
                 gen.set_waveform(Waveform.Sine)
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
                 gen.set_output_load(None, OutputLoad.HighZ)
@@ -204,10 +211,11 @@ class LabTool(object):
 
             elif bode_state is LabTool.BodeStates.STEP_SETUP:
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
-                osc.timebase_range(3 / LabTool.compute_frequency(bode_step, bode_setup))
 
-                LabTool.source_scale(osc, input_channel)
-                LabTool.source_scale(osc, output_channel)
+                osc.timebase_range(3 / labtool.compute_frequency(bode_step, bode_setup))
+
+                labtool.source_scale(osc, input_channel)
+                labtool.source_scale(osc, output_channel)
 
                 sleep(bode_setup["delay"])
                 bode_state = LabTool.BodeStates.DOWNLOAD_DATA

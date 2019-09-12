@@ -136,12 +136,12 @@ class Oscilloscope(Instrument, ABC):
     ####################
 
     @abstractmethod
-    def acquire_mode(self, mode: AcquireMode):
+    def set_acquire_mode(self, mode: AcquireMode):
         """ Sets the AcquireMode of the oscilloscope """
         pass
 
     @abstractmethod
-    def acquire_average_count(self, count: int):
+    def set_acquire_average_count(self, count: int):
         """ Sets the amount of samples to be used when averaging the signal. """
         pass
 
@@ -150,37 +150,42 @@ class Oscilloscope(Instrument, ABC):
     ####################
 
     @abstractmethod
-    def bandwidth_limit(self, channel: int, status: BandwidthLimit):
+    def set_bandwidth_limit(self, channel: int, status: BandwidthLimit):
         """ Sets the status of the BandwidthLimit """
         pass
 
     @abstractmethod
-    def coupling(self, channel: int, status: Coupling):
+    def set_coupling(self, channel: int, status: Coupling):
         """ Sets the status of the Coupling """
         pass
 
     @abstractmethod
-    def probe(self, channel: int, probe_value: int):
+    def set_probe(self, channel: int, probe_value: int):
         """ Sets the probe value of the channel """
         pass
 
     @abstractmethod
-    def range(self, channel: int, range_value: float):
+    def set_range(self, channel: int, range_value: float):
         """ Sets the range of the vertical axis of the channel """
         pass
 
     @abstractmethod
-    def scale(self, channel: int, scale_value: float):
+    def get_range(self, channel: int) -> float:
+        """ Returns the range setting of the given channel """
+        pass
+
+    @abstractmethod
+    def set_scale(self, channel: int, scale_value: float):
         """ Sets the vertical scale of the channel """
         pass
 
     @abstractmethod
-    def display(self, channel: int, status: bool):
+    def set_display(self, channel: int, status: bool):
         """ Sets the Channel Status in the oscilloscope's display """
         pass
 
     @abstractmethod
-    def offset(self, channel: int, offset_value: float):
+    def set_offset(self, channel: int, offset_value: float):
         """ Sets the offset value of the channel in the display """
         pass
 
@@ -189,17 +194,17 @@ class Oscilloscope(Instrument, ABC):
     #####################
 
     @abstractmethod
-    def timebase_mode(self, mode: TimebaseMode):
+    def set_timebase_mode(self, mode: TimebaseMode):
         """ Sets the timebase mode of the oscilloscope """
         pass
 
     @abstractmethod
-    def timebase_range(self, time_range: float):
+    def set_timebase_range(self, time_range: float):
         """ Sets the full range of the horizontal axis of the oscilloscope """
         pass
 
     @abstractmethod
-    def timebase_scale(self, scale_value: float):
+    def set_timebase_scale(self, scale_value: float):
         """ Sets the scale value of the time base """
         pass
 
@@ -208,27 +213,27 @@ class Oscilloscope(Instrument, ABC):
     ####################
 
     @abstractmethod
-    def trigger_mode(self, mode: TriggerMode):
+    def set_trigger_mode(self, mode: TriggerMode):
         """ Setting the trigger mode of the oscilloscope """
         pass
 
     @abstractmethod
-    def trigger_sweep(self, sweep: TriggerSweep):
+    def set_trigger_sweep(self, sweep: TriggerSweep):
         """ Setting the trigger sweep of the oscilloscope """
         pass
 
     @abstractmethod
-    def trigger_edge_level(self, level_value: float):
+    def set_trigger_edge_level(self, level_value: float):
         """ Setting the level of the edge triggering mode """
         pass
 
     @abstractmethod
-    def trigger_edge_source(self, source: Sources):
+    def set_trigger_edge_source(self, source: Sources):
         """ Setting the edge triggering source """
         pass
 
     @abstractmethod
-    def trigger_edge_slope(self, slope: TriggerSlope):
+    def set_trigger_edge_slope(self, slope: TriggerSlope):
         """ Setting the edge triggering slope """
         pass
 
@@ -237,32 +242,32 @@ class Oscilloscope(Instrument, ABC):
     #####################
 
     @abstractmethod
-    def waveform_source(self, source: Sources):
+    def set_waveform_source(self, source: Sources):
         """ Sets the source from which waveform data will be captured """
         pass
 
     @abstractmethod
-    def waveform_unsigned(self, unsigned: bool):
+    def set_waveform_unsigned(self, unsigned: bool):
         """ Sets whether byte packets are transferred as signed or unsigned """
         pass
 
     @abstractmethod
-    def waveform_format(self, waveform_format: WaveformFormat):
+    def set_waveform_format(self, waveform_format: WaveformFormat):
         """ Sets the format of data being transferred from the waveform"""
         pass
 
     @abstractmethod
-    def waveform_points(self, points: int):
+    def set_waveform_points(self, points: int):
         """ Sets the number of points to be taken from the waveform data """
         pass
 
     @abstractmethod
-    def waveform_data(self):
+    def set_waveform_data(self):
         """ Returns the waveform data """
         pass
 
     @abstractmethod
-    def waveform_preamble(self):
+    def set_waveform_preamble(self):
         """ Returns the waveform data preamble used to decode byte data """
         pass
 
