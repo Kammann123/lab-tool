@@ -99,12 +99,12 @@ class Agilent33220A(Generator):
         """Changes output waveform type, selectable from the ones in Enum"""
         self.resource.write("FUNCtion {}".format(self.waveforms[waveform]))
 
-    def set_freq(self, freq: float):
-        """Changes output freq"""
+    def set_frequency(self, frequency: float):
+        """ Changes output frequency """
         self.resource.write("FREQuency {}".format(freq))
 
-    def set_amp(self, amplitude: float):
-        """Changes output amplitude"""
+    def set_amplitude(self, amplitude: float):
+        """ Changes output amplitude """
         self.resource.write("VOLTage {}".format(amplitude))
 
     def set_offset(self, offset: float):

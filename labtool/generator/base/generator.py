@@ -103,12 +103,12 @@ class Generator(Instrument, ABC):
         pass
 
     @abstractmethod
-    def set_freq(self, freq: float):
-        """ Changes output freq """
+    def set_frequency(self, frequency: float):
+        """ Changes output frequency """
         pass
 
     @abstractmethod
-    def set_amp(self, amplitude: float):
+    def set_amplitude(self, amplitude: float):
         """ Changes output amplitude """
         pass
 

@@ -13,12 +13,23 @@ import pyvisa
 # labtool project modules
 from labtool.base.instrument import Instrument
 from labtool.oscilloscope.base.oscilloscope import Sources
-from labtool.oscilloscope.base.oscilloscope import ChannelSetup
+
+from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
+from labtool.oscilloscope.base.oscilloscope import Coupling
+
+from labtool.oscilloscope.base.oscilloscope import TriggerMode
+from labtool.oscilloscope.base.oscilloscope import TriggerSweep
+from labtool.oscilloscope.base.oscilloscope import TriggerSlope
+
+from labtool.oscilloscope.base.oscilloscope import TimebaseMode
+
+from labtool.oscilloscope.base.oscilloscope import AcquireMode
 
 from labtool.tool import LabTool
 
 # Loading the available devices into the LabTool package
 from labtool.oscilloscope.agilent.agilent_dso6014 import AgilentDSO6014
+from labtool.generator.agilent.agilent_33220a import Agilent33220A
 
 
 ###############################
@@ -100,70 +111,56 @@ if __name__ == "__main__":
 
     # Opening needed devices
     oscilloscope = open_device()
-
-    from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
-    from labtool.oscilloscope.base.oscilloscope import Coupling
-
-    from labtool.oscilloscope.base.oscilloscope import TriggerSetup
-    from labtool.oscilloscope.base.oscilloscope import TriggerMode
-    from labtool.oscilloscope.base.oscilloscope import TriggerSweep
-    from labtool.oscilloscope.base.oscilloscope import TriggerSlope
-
-    from labtool.oscilloscope.base.oscilloscope import TimebaseSetup
-    from labtool.oscilloscope.base.oscilloscope import TimebaseMode
-
-    from labtool.oscilloscope.base.oscilloscope import AcquireSetup
-    from labtool.oscilloscope.base.oscilloscope import AcquireMode
-
-    from labtool.tool import BodeSetup
+    generator = open_device()
 
     # Setup or configuration objects
-    input_channel_setup = output_channel_setup = ChannelSetup(
-        bandwidth_limit=BandwidthLimit.OFF,
-        coupling=Coupling.DC,
-        probe=10,
-        display=True,
-        range_value=20,
-        offset=0
-    )
+    input_channel_setup = output_channel_setup = {
+        "bandwidth_limit": BandwidthLimit.OFF,
+        "coupling": Coupling.DC,
+        "probe": 10,
+        "display": True,
+        "range": 20,
+        "offset": 0
+    }
 
-    trigger_setup = TriggerSetup(
-        mode=TriggerMode.Edge,
-        sweep=TriggerSweep.Auto,
-        level=0.01,
-        slope=TriggerSlope.Positive,
-        source=Sources.External
-    )
+    trigger_setup = {
+        "trigger-mode": TriggerMode.Edge,
+        "trigger-sweep": TriggerSweep.Auto,
+        "trigger-edge-level": 0.01,
+        "trigger-edge-slope": TriggerSlope.Positive,
+        "trigger-edge-source": Sources.External
+    }
 
-    timebase_setup = TimebaseSetup(
-        mode=TimebaseMode.Main
-    )
+    timebase_setup = {
+        "timebase-mode": TimebaseMode.Main
+    }
 
-    acquire_setup = AcquireSetup(
-        acquire_mode=AcquireMode.Average,
-        acquire_average_count=2
-    )
+    acquire_setup = {
+        "acquire-mode": AcquireMode.Average,
+        "average-count": 2
+    }
 
-    bode_setup = BodeSetup(
-        10000,
-        15000,
-        5
-    )
+    bode_setup = {
+        "delay": 0.1,
+        "start-frequency": 100,
+        "stop-frequency": 1000000,
+        "samples": 60
+    }
+
+    generator_setup = {
+        "amplitude": 20
+    }
 
     # Setting the LabTool run_bode() routine
     measures = LabTool.run_bode(
-        oscilloscope,
-        None,
-        0.2,
-        20,
-        Sources.Channel_1,
-        Sources.Channel_2,
-        input_channel_setup,
-        output_channel_setup,
+        oscilloscope, generator,
+        bode_setup,
+        generator_setup,
         trigger_setup,
         timebase_setup,
         acquire_setup,
-        bode_setup
+        Sources.Channel_1, input_channel_setup,
+        Sources.Channel_2, output_channel_setup
     )
 
     pyplot.plot([measure["frequency"] for measure in measures], [measure["bode_module"] for measure in measures])
