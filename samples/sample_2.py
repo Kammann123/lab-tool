@@ -18,7 +18,7 @@ from labtool.oscilloscope.base.oscilloscope import ChannelSetup
 from labtool.tool import LabTool
 
 # Loading the available devices into the LabTool package
-from labtool.oscilloscope.agilent.dso6014 import AgilentDSO6014
+from labtool.oscilloscope.agilent.agilent_dso6014 import AgilentDSO6014
 
 
 ###############################

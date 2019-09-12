@@ -3,6 +3,7 @@ Agilent 33220A signal generator class implementation.
 """
 
 # labtool project modules
+from labtool.tool import LabTool
 
 from labtool.generator.base.generator import Generator
 from labtool.generator.base.generator import Waveform
@@ -15,6 +16,7 @@ from labtool.generator.base.generator import OutputLoad
 #######################
 # Agilent model class #
 #######################
+
 class Agilent33220A(Generator):
     """ Agilent 33220A generator model """
 
@@ -65,23 +67,21 @@ class Agilent33220A(Generator):
         """ Returns a string with an generator's identifier. """
         return self.resource.query("*IDN?")
 
-    #####################
+    ##################
     # APPLY COMMANDS #
-    #####################
+    ##################
 
-    def generate_signal(self, waveform:Waveform, freq: float, amplitude: float, offset: float):
+    def generate_signal(self, waveform: Waveform, freq: float, amplitude: float, offset: float):
         """Generates a signal controlled by received parameters"""
-        self.resource.write("APPLy:{} {}, {}, {}".format(self.waveforms[waveform]), freq, amplitude, offset)
+        self.resource.write("APPLy:{} {}, {}, {}".format(self.waveforms[waveform], freq, amplitude, offset))
 
     ############################
     # OUTPUT CONFIG COMMANDS   #
     ############################
 
-
     def set_waveform(self, waveform: Waveform):
         """Changes output waveform type, selectable from the ones in Enum"""
         self.resource.write("FUNCtion {}".format(self.waveforms[waveform]))
-
 
     def set_freq(self, freq: float):
         """Changes output freq"""
@@ -101,7 +101,7 @@ class Agilent33220A(Generator):
 
     def set_ramp_symmetry(self, percent: float):
         """Changes output symmetry, only applicable if output is Ramp"""
-        self.resource.write("FUNCtion:{}:SYMMetry {}".format(self.waveforms[Waveform.Ramp],percent))
+        self.resource.write("FUNCtion:{}:SYMMetry {}".format(self.waveforms[Waveform.Ramp], percent))
 
     def set_output_mode(self, mode: OutputMode):
         """Turns the output on or off depending on the arg"""
@@ -117,20 +117,19 @@ class Agilent33220A(Generator):
 
     def check_output_polarity(self) -> OutputPolarity:
         """Returns a OutputPolarity indicating output polarity"""
-        self.resource.query("OUTPut:POLarity?")
+        return self.resource.query("OUTPut:POLarity?")
 
     def set_output_load(self, load: float, load_param: OutputLoad):
         """Changes output load. It can be a fixed value or HighZ"""
         if load_param == OutputLoad.HighZ:
             self.resource.write("OUTPut:LOAD {}".format(self.output_loads[load_param]))
-
         else:
             self.resource.write("OUTPut:LOAD {}".format(load))
 
     def check_output_load(self) -> (float, OutputLoad):
         """Returns a tuple including a value and OutputLoad, if OutputLoad == OutputLoad.HighZ
             value contents have no sense"""
-        self.resource.query("OUTPut:LOAD?")
+        return self.resource.query("OUTPut:LOAD?")
 
     def set_sync_mode(self, mode: SyncMode):
         """Turns the Sync output on or off depending on the arg"""
@@ -138,4 +137,8 @@ class Agilent33220A(Generator):
 
     def check_sync_mode(self) -> SyncMode:
         """Returns a OutputMode indicating output state"""
-        self.resource.query("OUTPut:SYNC?")
+        return self.resource.query("OUTPut:SYNC?")
+
+
+# Subscribing the new instrument to the lab-tool register
+LabTool.add_generator(Agilent33220A)
