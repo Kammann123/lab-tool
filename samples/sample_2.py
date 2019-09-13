@@ -140,9 +140,13 @@ if __name__ == "__main__":
         Sources.Channel_2, output_channel_setup
     )
 
-    print(frequency)
-    print(module)
-    print(phase)
+    frequency = [measure["frequency"] for measure in measures]
+    module = [measure["bode-module"] for measure in measures]
+    phase = [measure["bode-phase"] for measure in measures]
+
+    filepath = input("Enter the name of the output excel file: ")
+    LabTool.export_to_csv(filepath, measures)
 
     pyplot.semilogx(frequency, module)
     pyplot.show()
+    input("Press any key...")
