@@ -118,10 +118,11 @@ if __name__ == "__main__":
     # the start, stop and samples are important.
     bode_setup = {
         "delay": 0.1,
+        "stable-time": 0.5,
         "scale": BodeScale.Log,
         "start-frequency": 100,
-        "stop-frequency": 50000,
-        "samples": 100
+        "stop-frequency": 40000,
+        "samples": 20
     }
 
     generator_setup = {
@@ -144,9 +145,10 @@ if __name__ == "__main__":
     module = [measure["bode-module"] for measure in measures]
     phase = [measure["bode-phase"] for measure in measures]
 
+    pyplot.semilogx(frequency, module)
+    pyplot.show()
+
     filepath = input("Enter the name of the output excel file: ")
     LabTool.export_to_csv(filepath, measures)
 
-    pyplot.semilogx(frequency, module)
-    pyplot.show()
     input("Press any key...")

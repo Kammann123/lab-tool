@@ -4,7 +4,9 @@ LabTool module with a list of the available devices
 
 # python native modules
 from enum import Enum
+from time import sleep
 from math import log10
+from numpy import logspace
 
 # third-party modules
 import pyvisa
@@ -166,11 +168,12 @@ class LabTool(object):
 
         beta = min_frequency
         alpha = (max_frequency - min_frequency) / log10(samples)
+        frequencies = list(logspace(log10(min_frequency), log10(max_frequency), num=samples))
 
         if bode_setup["scale"] is BodeScale.Linear:
             result = (max_frequency - min_frequency) * step / samples + min_frequency
         elif bode_setup["scale"] is BodeScale.Log:
-            result = alpha * log10(step + 1) + beta
+            result = frequencies[step]
         return result
 
     @staticmethod
@@ -211,7 +214,7 @@ class LabTool(object):
 
         # Bode setup parameter validation, raising exception
         # when not receiving the needed input data
-        for dependency in ["delay", "start-frequency", "stop-frequency", "samples"]:
+        for dependency in ["delay", "start-frequency", "stop-frequency", "samples", "stable-time", "scale"]:
             if dependency not in bode_setup.keys():
                 raise ValueError("Bode setup data is not complete. Missing: {}".format(dependency))
 
@@ -252,6 +255,7 @@ class LabTool(object):
                     LabTool.compute_frequency(bode_step, bode_setup)
                 )
 
+                sleep(bode_setup["stable-time"])
                 bode_state = LabTool.BodeStates.DOWNLOAD_DATA
 
             elif bode_state is LabTool.BodeStates.DOWNLOAD_DATA:
