@@ -8,6 +8,7 @@ from math import log10
 
 # third-party modules
 import pyvisa
+import xlwt
 
 # labtool project modules
 from labtool.oscilloscope.base.oscilloscope import Oscilloscope
@@ -276,3 +277,25 @@ class LabTool(object):
 
         # Finished without errors, returning the result!
         return bode_measures
+
+    @staticmethod
+    def export_to_csv(filepath: str, bode_measures: list):
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet("Bode")
+
+        for index, header in enumerate(["Frequency [Hz]", "Input VPP", "Output VPP", "Bode Module [dB]", "Bode Phase [°]"]):
+            sheet.write(0, index, header)
+
+        for measure_index, measure in enumerate(bode_measures):
+            row = [
+                    measure["frequency"],
+                    measure["input-vpp"],
+                    measure["output-vpp"],
+                    measure["bode-module"],
+                    measure["bode-phase"]
+            ]
+
+            for element_index, element in enumerate(row):
+                sheet.write(measure_index + 1, element_index, element)
+
+        workbook.save("{}.xls".format(filepath))
