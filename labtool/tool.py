@@ -170,7 +170,7 @@ class LabTool(object):
         if bode_setup["scale"] is BodeScale.Linear:
             result = (max_frequency - min_frequency) * step / samples + min_frequency
         elif bode_setup["scale"] is BodeScale.Log:
-            result = alpha * log10(step) + beta
+            result = alpha * log10(step + 1) + beta
         return result
 
     @staticmethod
