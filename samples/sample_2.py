@@ -98,9 +98,9 @@ if __name__ == "__main__":
     trigger_setup = {
         "trigger-mode": TriggerMode.Edge,
         "trigger-sweep": TriggerSweep.Auto,
-        "trigger-edge-level": 0.01,
+        "trigger-edge-level": 0,
         "trigger-edge-slope": TriggerSlope.Positive,
-        "trigger-edge-source": Sources.External
+        "trigger-edge-source": Sources.Channel_1
     }
 
     timebase_setup = {
@@ -112,11 +112,14 @@ if __name__ == "__main__":
         "average-count": 2
     }
 
+    # When using BodeScale.Log mode, only start-frequency,
+    # and samples matter, when using BodeScale.Linear, all
+    # the start, stop and samples are important.
     bode_setup = {
-        "delay": 0.3,
-        "start-frequency": 400,
-        "stop-frequency": 40000,
-        "samples": 60
+        "delay": 0.1,
+        "start-frequency": 100,
+        "stop-frequency": 50000,
+        "samples": 100
     }
 
     generator_setup = {
@@ -142,3 +145,8 @@ if __name__ == "__main__":
     print(frequency)
     print(module)
     print(phase)
+
+    pyplot.semilogx(frequency, module)
+    pyplot.show()
+
+    input()

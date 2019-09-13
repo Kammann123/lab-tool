@@ -8,6 +8,9 @@ from enum import Enum
 # third-party modules
 import pyvisa
 
+# labtool project modules
+from labtool.base.delayed_resource import DelayedResource
+
 
 ################################
 # Instrument module exceptions #
@@ -49,11 +52,12 @@ class Instrument(object):
         try:
             # Creating an instance of ResourceManager and opening the given resource
             resource_manager = pyvisa.ResourceManager()
-            self.resource = resource_manager.open_resource(resource_name)
+            resource = resource_manager.open_resource(resource_name)
 
             # Setting up the resource
-            self.resource.write_termination = "\n"
-            self.resource.read_termination = "\n"
+            resource.write_termination = "\n"
+            resource.read_termination = "\n"
+            self.resource = DelayedResource(resource)
         except:
             raise ResourceNotFound
 
@@ -62,3 +66,6 @@ class Instrument(object):
             Closing the visa connection.
          """
         self.resource.close()
+
+    def set_delay(self, delay):
+        self.resource.set_delay(delay)

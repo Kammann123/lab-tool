@@ -329,9 +329,9 @@ class Oscilloscope(Instrument, ABC):
                 + average-count: The number of sameples used to averaging the signal shown in the screen.
                 """
         if "acquire-mode" in kwargs.keys():
-            self.acquire_mode(kwargs["acquire-mode"])
+            self.set_acquire_mode(kwargs["acquire-mode"])
         if "average-count" in kwargs.keys():
-            self.acquire_average_count(kwargs["average-count"])
+            self.set_acquire_average_count(kwargs["average-count"])
 
     def setup_timebase(self, **kwargs):
         """ Sets up all the parameters of the timebase subsystem using a class
@@ -342,11 +342,11 @@ class Oscilloscope(Instrument, ABC):
                 + timebase-scale: Sets the scale of the timebase.
                 """
         if "timebase-mode" in kwargs.keys():
-            self.timebase_mode(kwargs["timebase-mode"])
+            self.set_timebase_mode(kwargs["timebase-mode"])
         if "timebase-range" in kwargs.keys():
-            self.timebase_range(kwargs["timebase-range"])
+            self.set_timebase_range(kwargs["timebase-range"])
         if "timebase-scale" in kwargs.keys():
-            self.timebase_scale(kwargs["timebase-scale"])
+            self.set_timebase_scale(kwargs["timebase-scale"])
 
     def setup_trigger(self, **kwargs):
         """ Sets up all the parameters of the trigger subsystem using a class
@@ -359,15 +359,15 @@ class Oscilloscope(Instrument, ABC):
                 + trigger-edge-slope: TriggerSlope
                 """
         if "trigger-mode" in kwargs.keys():
-            self.trigger_mode(kwargs["trigger-mode"])
+            self.set_trigger_mode(kwargs["trigger-mode"])
         if "trigger-sweep" in kwargs.keys():
-            self.trigger_sweep(kwargs["trigger-sweep"])
+            self.set_trigger_sweep(kwargs["trigger-sweep"])
         if "trigger-edge-level" in kwargs.keys():
-            self.trigger_edge_level(kwargs["trigger-edge-level"])
+            self.set_trigger_edge_level(kwargs["trigger-edge-level"])
         if "trigger-edge-source" in kwargs.keys():
-            self.trigger_edge_source(kwargs["trigger-edge-source"])
+            self.set_trigger_edge_source(kwargs["trigger-edge-source"])
         if "trigger-edge-slope" in kwargs.keys():
-            self.trigger_edge_slope(kwargs["trigger-edge-slope"])
+            self.set_trigger_edge_slope(kwargs["trigger-edge-slope"])
 
     def setup_channel(self, channel: int, **kwargs):
         """ Sets up all the parameters of a channel by one using a
@@ -382,16 +382,16 @@ class Oscilloscope(Instrument, ABC):
                 + offset: Offset value
                 """
         if "bandwidth_limit" in kwargs.keys():
-            self.bandwidth_limit(channel, kwargs["bandwidth_limit"])
+            self.set_bandwidth_limit(channel, kwargs["bandwidth_limit"])
         if "coupling" in kwargs.keys():
-            self.coupling(channel, kwargs["coupling"])
+            self.set_coupling(channel, kwargs["coupling"])
         if "probe" in kwargs.keys():
-            self.probe(channel, kwargs["probe"])
+            self.set_probe(channel, kwargs["probe"])
         if "range" in kwargs.keys():
-            self.range(channel, kwargs["range"])
+            self.set_range(channel, kwargs["range"])
         if "scale" in kwargs.keys():
-            self.scale(channel, kwargs["scale"])
+            self.set_scale(channel, kwargs["scale"])
         if "display" in kwargs.keys():
-            self.display(channel, kwargs["display"])
+            self.set_display(channel, kwargs["display"])
         if "offset" in kwargs.keys():
-            self.offset(channel, kwargs["offset"])
+            self.set_offset(channel, kwargs["offset"])

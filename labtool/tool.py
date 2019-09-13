@@ -4,7 +4,6 @@ LabTool module with a list of the available devices
 
 # python native modules
 from enum import Enum
-from time import sleep
 
 # third-party modules
 import pyvisa
@@ -22,6 +21,10 @@ from labtool.generator.base.generator import OutputMode
 from labtool.base.instrument import InstrumentType
 from labtool.base.instrument import Instrument
 
+
+############################
+# LabTool Enum Definitions #
+############################
 
 ######################
 # LabTool Exceptions #
@@ -119,23 +122,34 @@ class LabTool(object):
         }
 
     @staticmethod
-    def vertical_scale(oscilloscope: Oscilloscope, source: Sources):
-        """ Auto scaling the vertical axis of the Oscilloscope for the given source """
-        pass
+    def horizontal_scale(oscilloscope: Oscilloscope, input_channel: Sources, output_channel: Sources, frequency: float):
+        """ Auto scaling the horizontal axis of the Oscilloscope for the given source """
+        periods = 2
+        scale_complete = False
+        while not scale_complete:
+            current_phase = float(oscilloscope.measure_phase(output_channel, input_channel))
+            if -180 < current_phase < 180:
+                scale_complete = True
+            else:
+                oscilloscope.set_timebase_range(periods / frequency)
+                periods += 1
 
     @staticmethod
-    def source_scale(oscilloscope: Oscilloscope, source: Sources):
-        constant_limit = 1e3
-        pattern_value = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50]
-        current_value = 0
-        while True:
-            source_vpp = float(oscilloscope.measure_vpp(source))
-            if abs(source_vpp) < constant_limit:
-                break
+    def vertical_scale(oscilloscope: Oscilloscope, source: Sources):
+        """ Auto scaling the vertical axis of the Oscilloscope for the given source """
+        margin = 0.1
+        pattern = [10, 20, 50]
+        current = 0
+        scale_complete = False
+        while not scale_complete:
+            signal_vpp = float(oscilloscope.measure_vpp(source))
+            channel_vpp = float(oscilloscope.get_range(Oscilloscope.source_to_channel(source)))
+            if signal_vpp < channel_vpp:
+                oscilloscope.set_range(Oscilloscope.source_to_channel(source), signal_vpp * (1 + margin))
+                scale_complete = True
             else:
-                oscilloscope.scale(Oscilloscope.source_to_channel(source), pattern_value[current_value])
-                current_value += 1
-                sleep(0.4)
+                oscilloscope.set_scale(Oscilloscope.source_to_channel(source), pattern[current])
+                current += 1
 
     @staticmethod
     def compute_frequency(step: int, bode_setup: dict):
@@ -158,6 +172,7 @@ class LabTool(object):
 
         [Bode Setup]
             + delay: seconds between every step
+            + scale: scale used to compute frequency
             + start-frequency: start point frequency
             + stop-frequency: stop point frequency
             + samples: number of samples taken between the start and the stop frequency
@@ -199,6 +214,7 @@ class LabTool(object):
                 osc.setup_trigger(**trigger_setup)
                 osc.setup_timebase(**timebase_setup)
                 osc.setup_acquire(**acquire_setup)
+                osc.set_delay(bode_setup["delay"])
 
                 gen.reset()
                 gen.set_waveform(Waveform.Sine)
@@ -211,13 +227,16 @@ class LabTool(object):
 
             elif bode_state is LabTool.BodeStates.STEP_SETUP:
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
+                osc.set_timebase_range(2 / LabTool.compute_frequency(bode_step, bode_setup))
 
-                osc.timebase_range(3 / labtool.compute_frequency(bode_step, bode_setup))
+                LabTool.vertical_scale(osc, input_channel)
+                LabTool.vertical_scale(osc, output_channel)
+                LabTool.horizontal_scale(
+                    osc,
+                    input_channel, output_channel,
+                    LabTool.compute_frequency(bode_step, bode_setup)
+                )
 
-                labtool.source_scale(osc, input_channel)
-                labtool.source_scale(osc, output_channel)
-
-                sleep(bode_setup["delay"])
                 bode_state = LabTool.BodeStates.DOWNLOAD_DATA
 
             elif bode_state is LabTool.BodeStates.DOWNLOAD_DATA:

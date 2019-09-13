@@ -212,15 +212,15 @@ class AgilentDSO6014(Oscilloscope):
 
     def set_trigger_edge_level(self, level_value: float):
         """ Setting the level of the edge triggering mode """
-        self.resource.write(":TRIG[:EDGE]:LEV {}".format(level_value))
+        self.resource.write(":TRIG:EDGE:LEV {}".format(level_value))
 
     def set_trigger_edge_source(self, source: Sources):
         """ Setting the edge triggering source """
-        self.resource.write(":TRIG[:EDGE]:SOUR {}".format(self.sources[source]))
+        self.resource.write(":TRIG:EDGE:SOUR {}".format(self.sources[source]))
 
     def set_trigger_edge_slope(self, slope: TriggerSlope):
         """ Setting the edge triggering slope """
-        self.resource.write(":TRIG[:EDGE]:SLOP {}".format(self.trigger_slopes[slope]))
+        self.resource.write(":TRIG:EDGE:SLOP {}".format(self.trigger_slopes[slope]))
 
     #####################
     # WAVEFORM COMMANDS #
