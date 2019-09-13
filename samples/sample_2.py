@@ -28,6 +28,7 @@ from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
 
 from labtool.tool import LabTool
+from labtool.tool import BodeScale
 
 # Loading the available devices into the LabTool package
 from labtool.oscilloscope.agilent.agilent_dso6014 import AgilentDSO6014
@@ -117,6 +118,7 @@ if __name__ == "__main__":
     # the start, stop and samples are important.
     bode_setup = {
         "delay": 0.1,
+        "scale": BodeScale.Log,
         "start-frequency": 100,
         "stop-frequency": 50000,
         "samples": 100

@@ -4,6 +4,7 @@ LabTool module with a list of the available devices
 
 # python native modules
 from enum import Enum
+from math import log10
 
 # third-party modules
 import pyvisa
@@ -25,6 +26,11 @@ from labtool.base.instrument import Instrument
 ############################
 # LabTool Enum Definitions #
 ############################
+
+class BodeScale(Enum):
+    Linear = "Linear"
+    Log = "Log"
+
 
 ######################
 # LabTool Exceptions #
@@ -156,7 +162,15 @@ class LabTool(object):
         min_frequency = bode_setup["start-frequency"]
         max_frequency = bode_setup["stop-frequency"]
         samples = bode_setup["samples"]
-        return (max_frequency - min_frequency) * step / samples + min_frequency
+
+        beta = min_frequency
+        alpha = (max_frequency - min_frequency) / log10(samples)
+
+        if bode_setup["scale"] is BodeScale.Linear:
+            result = (max_frequency - min_frequency) * step / samples + min_frequency
+        elif bode_setup["scale"] is BodeScale.Log:
+            result = alpha * log10(step) + beta
+        return result
 
     @staticmethod
     def run_bode(
