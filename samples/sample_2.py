@@ -118,9 +118,9 @@ if __name__ == "__main__":
     # the start, stop and samples are important.
     bode_setup = {
         "delay": 0.1,
-        "stable-time": 0.5,
+        "stable-time": 0.1,
         "scale": BodeScale.Log,
-        "start-frequency": 100,
+        "start-frequency": 10,
         "stop-frequency": 40000,
         "samples": 20
     }

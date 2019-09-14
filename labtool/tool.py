@@ -233,6 +233,7 @@ class LabTool(object):
                 osc.setup_timebase(**timebase_setup)
                 osc.setup_acquire(**acquire_setup)
                 osc.set_delay(bode_setup["delay"])
+                osc.set_hf_reject(True)
 
                 gen.reset()
                 gen.set_waveform(Waveform.Sine)

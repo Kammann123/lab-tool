@@ -222,6 +222,14 @@ class AgilentDSO6014(Oscilloscope):
         """ Setting the edge triggering slope """
         self.resource.write(":TRIG:EDGE:SLOP {}".format(self.trigger_slopes[slope]))
 
+    def set_hf_reject(self, value: bool):
+        """ Setting the HFReject """
+        self.resource.write(":TRIG:HFR {}".format("1" if value else "0"))
+
+    def set_nf_reject(self, value: bool):
+        """ Setting the NFReject """
+        self.resource.write(":TRIG:NREJ {}".format("1" if value else "0"))
+
     #####################
     # WAVEFORM COMMANDS #
     #####################

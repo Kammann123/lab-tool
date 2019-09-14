@@ -237,6 +237,16 @@ class Oscilloscope(Instrument, ABC):
         """ Setting the edge triggering slope """
         pass
 
+    @abstractmethod
+    def set_hf_reject(self, value: bool):
+        """ Setting the HFReject """
+        pass
+
+    @abstractmethod
+    def set_nf_reject(self, value: bool):
+        """ Setting the NFReject """
+        pass
+
     #####################
     # WAVEFORM COMMANDS #
     #####################
