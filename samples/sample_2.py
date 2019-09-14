@@ -101,7 +101,9 @@ if __name__ == "__main__":
         "trigger-sweep": TriggerSweep.Auto,
         "trigger-edge-level": 0,
         "trigger-edge-slope": TriggerSlope.Positive,
-        "trigger-edge-source": Sources.Channel_1
+        "trigger-edge-source": Sources.Channel_1,
+        "hf-reject": True,
+        "n-reject": True
     }
 
     timebase_setup = {

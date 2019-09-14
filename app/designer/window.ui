@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>471</width>
-    <height>386</height>
+    <width>629</width>
+    <height>501</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="device_page">
        <property name="sizePolicy">
@@ -58,7 +58,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>You need to connect both an oscilloscope and a generator via USB, then update or refresh with the button and select for each device those that have been detected.</string>
+           <string>You need to connect both an oscilloscope and a generator via USB, then update or refresh with the button and select for each device those that have been detected. Only supported devices will be detected.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -111,17 +111,36 @@
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QComboBox" name="generatorList"/>
+           <widget class="QComboBox" name="generators"/>
           </item>
           <item row="0" column="2">
-           <widget class="QComboBox" name="oscilloscopeList"/>
+           <widget class="QComboBox" name="oscilloscopes"/>
           </item>
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item alignment="Qt::AlignRight">
-           <widget class="QPushButton" name="refreshButton">
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="connection_status">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Remember using the Refresh button whenever you want to update the Device's lists.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="refresh">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -133,8 +152,8 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="connectionButton">
+          <item row="0" column="2">
+           <widget class="QPushButton" name="connection">
             <property name="enabled">
              <bool>false</bool>
             </property>
@@ -178,7 +197,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="input_channel">
            <attribute name="title">
@@ -208,7 +227,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QCheckBox" name="inputBandwidth">
+                <widget class="QCheckBox" name="input_bw">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -220,6 +239,9 @@
                  </property>
                  <property name="text">
                   <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                  <property name="tristate">
                   <bool>false</bool>
@@ -253,7 +275,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="inputCoupling">
+                <widget class="QComboBox" name="input_coupling">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -266,10 +288,20 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>DC</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>AC</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QComboBox" name="inputProbe">
+                <widget class="QComboBox" name="input_probe">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -282,6 +314,85 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>10</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>1</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_24">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Source</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QComboBox" name="input_source">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Channel 1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 5</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 6</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>External</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Line</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
               </layout>
@@ -317,7 +428,7 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QCheckBox" name="outputBandwidth">
+                <widget class="QCheckBox" name="output_bw">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -329,6 +440,9 @@
                  </property>
                  <property name="text">
                   <string/>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                  <property name="tristate">
                   <bool>false</bool>
@@ -362,7 +476,7 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="outputCoupling">
+                <widget class="QComboBox" name="output_coupling">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -375,10 +489,20 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>DC</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>AC</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QComboBox" name="outputProbe">
+                <widget class="QComboBox" name="output_probe">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -391,6 +515,91 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>10</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>1</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLabel" name="label_25">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Source</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1">
+                <widget class="QComboBox" name="output_source">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="currentText">
+                  <string>Channel 2</string>
+                 </property>
+                 <property name="currentIndex">
+                  <number>1</number>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Channel 1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 5</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 6</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>External</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Line</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
               </layout>
@@ -441,7 +650,7 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string> Trigger Sweep</string>
+                  <string>Trigger Sweep</string>
                  </property>
                 </widget>
                </item>
@@ -459,59 +668,147 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QComboBox" name="triggerSource">
+                <widget class="QComboBox" name="trigger_source">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Channel 1</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 2</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 3</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 4</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 5</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Channel 6</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>External</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Line</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QComboBox" name="triggerSlope">
+                <widget class="QComboBox" name="trigger_slope">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Positive</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Negative</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Either</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Alternate</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item row="2" column="1">
-                <widget class="QComboBox" name="triggerSweep">
+                <widget class="QComboBox" name="trigger_sweep">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
                    <height>0</height>
                   </size>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Auto</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Normal</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="triggerLevel">
+                <widget class="QDoubleSpinBox" name="trigger_level">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
                    <height>0</height>
                   </size>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="minimum">
+                  <double>-10.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>10.000000000000000</double>
+                 </property>
                 </widget>
                </item>
                <item row="5" column="1">
-                <widget class="QCheckBox" name="hfReject">
+                <widget class="QCheckBox" name="trigger_hf_reject">
                  <property name="text">
                   <string>HFReject</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
                <item row="5" column="0">
-                <widget class="QCheckBox" name="nReject">
+                <widget class="QCheckBox" name="trigger_n_reject">
                  <property name="text">
                   <string>NReject</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -550,24 +847,11 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string>Delay (s)</string>
+                  <string>Delay between VISA commands (s)</string>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
-                <widget class="QLabel" name="label_19">
-                 <property name="font">
-                  <font>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Scale</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="0">
+               <item row="4" column="0">
                 <widget class="QLabel" name="label_20">
                  <property name="font">
                   <font>
@@ -580,7 +864,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0">
+               <item row="5" column="0">
                 <widget class="QLabel" name="label_21">
                  <property name="font">
                   <font>
@@ -593,7 +877,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
+               <item row="6" column="0">
                 <widget class="QLabel" name="label_22">
                  <property name="font">
                   <font>
@@ -607,15 +891,27 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QDoubleSpinBox" name="generatorVpp">
+                <widget class="QDoubleSpinBox" name="generator_vpp">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="maximum">
+                  <double>20.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>20.000000000000000</double>
                  </property>
                 </widget>
                </item>
@@ -627,48 +923,80 @@
                    <height>0</height>
                   </size>
                  </property>
-                 <property name="buttonSymbols">
-                  <enum>QAbstractSpinBox::NoButtons</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="1">
-                <widget class="QComboBox" name="scale">
-                 <property name="minimumSize">
-                  <size>
-                   <width>200</width>
-                   <height>0</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="1">
-                <widget class="QDoubleSpinBox" name="startFrequency">
-                 <property name="minimumSize">
-                  <size>
-                   <width>200</width>
-                   <height>0</height>
-                  </size>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
                  </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="maximum">
+                  <double>10.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.010000000000000</double>
                  </property>
                 </widget>
                </item>
                <item row="4" column="1">
-                <widget class="QDoubleSpinBox" name="stopFrequency">
+                <widget class="QDoubleSpinBox" name="start_frequency">
                  <property name="minimumSize">
                   <size>
                    <width>200</width>
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="minimum">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000000.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>100.000000000000000</double>
                  </property>
                 </widget>
                </item>
                <item row="5" column="1">
+                <widget class="QDoubleSpinBox" name="stop_frequency">
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="decimals">
+                  <number>2</number>
+                 </property>
+                 <property name="minimum">
+                  <double>1.000000000000000</double>
+                 </property>
+                 <property name="maximum">
+                  <double>1000000.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>100000.000000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="1">
                 <widget class="QSpinBox" name="samples">
                  <property name="minimumSize">
                   <size>
@@ -676,9 +1004,92 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
                  </property>
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>25</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_23">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Establishment Time (s)</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QDoubleSpinBox" name="establishment_time">
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                 <property name="decimals">
+                  <number>3</number>
+                 </property>
+                 <property name="maximum">
+                  <double>10.000000000000000</double>
+                 </property>
+                 <property name="value">
+                  <double>0.100000000000000</double>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_19">
+                 <property name="font">
+                  <font>
+                   <weight>75</weight>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Scale</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="1">
+                <widget class="QComboBox" name="scale">
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>Log</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Linear</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
               </layout>
@@ -689,9 +1100,9 @@
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item alignment="Qt::AlignLeft">
-           <widget class="QPushButton" name="backSettingButton">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QPushButton" name="settings_back">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -703,8 +1114,24 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="measureButton">
+          <item row="0" column="1">
+           <widget class="QLabel" name="setting_status">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Settings are needed before we start measuring...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="measure">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -737,6 +1164,12 @@
             <bold>true</bold>
            </font>
           </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <property name="text">
            <string>Measure Output</string>
           </property>
@@ -758,6 +1191,52 @@
          </widget>
         </item>
         <item>
+         <widget class="QTextEdit" name="logger">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>100</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <weight>50</weight>
+            <bold>false</bold>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(0, 0, 0);
+color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="autoFormatting">
+           <set>QTextEdit::AutoNone</set>
+          </property>
+          <property name="html">
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="textInteractionFlags">
+           <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QWidget" name="horizontalWidget_3" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -767,14 +1246,20 @@
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <widget class="QProgressBar" name="measureProgress">
+            <widget class="QProgressBar" name="progress">
              <property name="value">
-              <number>24</number>
+              <number>0</number>
+             </property>
+             <property name="invertedAppearance">
+              <bool>false</bool>
              </property>
             </widget>
            </item>
            <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="backMeasureButton">
+            <widget class="QPushButton" name="measure_back">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -787,7 +1272,10 @@
             </widget>
            </item>
            <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="stopButton">
+            <widget class="QPushButton" name="stop">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -800,7 +1288,10 @@
             </widget>
            </item>
            <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="exportButton">
+            <widget class="QPushButton" name="export_excel">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>

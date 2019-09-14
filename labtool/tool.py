@@ -66,6 +66,12 @@ class LabTool(object):
         DONE = "Done"
 
     @staticmethod
+    def to_enum(value: str, enum: Enum):
+        for enum_value in enum:
+            if enum_value.value == value:
+                return enum_value
+
+    @staticmethod
     def open_device_by_type(resource_type: InstrumentType) -> Instrument:
         """ Returns an Instrument interface to handle communication with the given type of instrument if connected.
         If no instruments are found, DeviceNotFound will be raised. """
@@ -233,7 +239,9 @@ class LabTool(object):
             timebase_setup: dict,
             acquire_setup: dict,
             input_channel: Sources, input_channel_setup: dict,
-            output_channel: Sources, output_channel_setup: dict):
+            output_channel: Sources, output_channel_setup: dict,
+            progress_callback=None,
+            log_callback=None):
         """ Runs an automatic bode measuring using the given Oscilloscope and Generator.
 
         [Bode Setup]
@@ -260,6 +268,14 @@ class LabTool(object):
             ]
         """
 
+        def progress(value: int):
+            if progress_callback is not None:
+                progress_callback.emit(value)
+
+        def log(value: str):
+            if log_callback is not None:
+                log_callback.emit("[LabTool] >> {}".format(value))
+
         # Bode setup parameter validation, raising exception
         # when not receiving the needed input data
         for dependency in ["delay", "start-frequency", "stop-frequency", "samples", "stable-time", "scale"]:
@@ -274,6 +290,10 @@ class LabTool(object):
         # FSM working loop...
         while bode_state is not LabTool.BodeStates.DONE:
             if bode_state is LabTool.BodeStates.INITIAL_SETUP:
+                progress(0)
+                log("INITIAL_SETUP started.")
+                log("Setting up the Oscilloscope channels, trigger, timebase...")
+
                 osc.reset()
                 osc.setup_channel(osc.source_to_channel(input_channel), **input_channel_setup)
                 osc.setup_channel(osc.source_to_channel(output_channel), **output_channel_setup)
@@ -281,7 +301,8 @@ class LabTool(object):
                 osc.setup_timebase(**timebase_setup)
                 osc.setup_acquire(**acquire_setup)
                 osc.set_delay(bode_setup["delay"])
-                osc.set_hf_reject(True)
+
+                log("Setting up the Generator waveform, frequency, output...")
 
                 gen.reset()
                 gen.set_waveform(Waveform.Sine)
@@ -291,8 +312,11 @@ class LabTool(object):
                 gen.set_output_mode(OutputMode.ON)
 
                 bode_state = LabTool.BodeStates.STEP_SETUP
+                log("STEP_SETUP started.")
 
             elif bode_state is LabTool.BodeStates.STEP_SETUP:
+                progress(bode_step * 100 / bode_setup["samples"])
+
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
                 osc.set_timebase_range(2 / LabTool.compute_frequency(bode_step, bode_setup))
 
@@ -325,6 +349,7 @@ class LabTool(object):
                 bode_step += 1
                 if bode_step >= bode_setup["samples"]:
                     bode_state = LabTool.BodeStates.DONE
+                    log("Measuring process finished successfully!")
                 else:
                     bode_state = LabTool.BodeStates.STEP_SETUP
 

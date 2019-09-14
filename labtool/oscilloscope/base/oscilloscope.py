@@ -30,11 +30,6 @@ class AcquireMode(Enum):
     PeakDetect = "PeakDetect"
 
 
-class BandwidthLimit(Enum):
-    OFF = "OFF"
-    ON = "ON"
-
-
 class Coupling(Enum):
     AC = "AC"
     DC = "DC"
@@ -64,12 +59,12 @@ class TriggerSlope(Enum):
 
 
 class Sources(Enum):
-    Channel_1 = "Channel_1"
-    Channel_2 = "Channel_2"
-    Channel_3 = "Channel_3"
-    Channel_4 = "Channel_4"
-    Channel_5 = "Channel_5"
-    Channel_6 = "Channel_6"
+    Channel_1 = "Channel 1"
+    Channel_2 = "Channel 2"
+    Channel_3 = "Channel 3"
+    Channel_4 = "Channel 4"
+    Channel_5 = "Channel 5"
+    Channel_6 = "Channel 6"
     External = "External"
     Line = "Line"
 
@@ -150,7 +145,7 @@ class Oscilloscope(Instrument, ABC):
     ####################
 
     @abstractmethod
-    def set_bandwidth_limit(self, channel: int, status: BandwidthLimit):
+    def set_bandwidth_limit(self, channel: int, status: bool):
         """ Sets the status of the BandwidthLimit """
         pass
 
@@ -323,9 +318,10 @@ class Oscilloscope(Instrument, ABC):
     @staticmethod
     def channel_to_source(number: int):
         """ Returns the source enum definition from the channel number """
-        formatted_channel = "Channel_{}".format(number)
-        if formatted_channel in [source.value for source in Sources]:
-            return formatted_channel
+        formatted_channel = "Channel {}".format(number)
+        for source in Sources:
+            if source.value == formatted_channel:
+                return source
         return None
 
     ###########################
@@ -378,6 +374,10 @@ class Oscilloscope(Instrument, ABC):
             self.set_trigger_edge_source(kwargs["trigger-edge-source"])
         if "trigger-edge-slope" in kwargs.keys():
             self.set_trigger_edge_slope(kwargs["trigger-edge-slope"])
+        if "n-reject" in kwargs.keys():
+            self.set_n_reject(kwargs["n-reject"])
+        if "hf-reject" in kwargs.keys():
+            self.set_hf_reject(kwargs["hf-reject"])
 
     def setup_channel(self, channel: int, **kwargs):
         """ Sets up all the parameters of a channel by one using a

@@ -5,7 +5,6 @@ DSO6014 Agilent Model class implementation.
 # labtool project modules
 from labtool.oscilloscope.base.oscilloscope import Oscilloscope
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
-from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
 from labtool.oscilloscope.base.oscilloscope import Coupling
 from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 from labtool.oscilloscope.base.oscilloscope import TriggerMode
@@ -54,11 +53,6 @@ class AgilentDSO6014(Oscilloscope):
         AcquireMode.Average: "AVERage",
         AcquireMode.HighResolution: "HRESolution",
         AcquireMode.PeakDetect: "PEAK"
-    }
-
-    bandwidth_limits = {
-        BandwidthLimit.ON: "1",
-        BandwidthLimit.OFF: "0"
     }
 
     timebase_modes = {
@@ -145,9 +139,9 @@ class AgilentDSO6014(Oscilloscope):
     # CHANNEL COMMANDS #
     ####################
 
-    def set_bandwidth_limit(self, channel: int, status: BandwidthLimit):
+    def set_bandwidth_limit(self, channel: int, status: bool):
         """ Sets the status of the BandwidthLimit """
-        self.resource.write(":CHAN{}:BWL {}".format(channel, self.bandwidth_limits[status]))
+        self.resource.write(":CHAN{}:BWL {}".format(channel, "1" if status else "0"))
 
     def set_coupling(self, channel: int, status: Coupling):
         """ Sets the status of the Coupling """
