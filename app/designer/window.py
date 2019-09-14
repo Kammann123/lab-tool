@@ -615,7 +615,8 @@ class Ui_LabToolWindow(object):
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalWidget_3)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.progress = QtWidgets.QProgressBar(self.horizontalWidget_3)
-        self.progress.setProperty("value", 24)
+        self.progress.setProperty("value", 0)
+        self.progress.setInvertedAppearance(False)
         self.progress.setObjectName("progress")
         self.horizontalLayout_4.addWidget(self.progress)
         self.measure_back = QtWidgets.QPushButton(self.horizontalWidget_3)
@@ -651,7 +652,7 @@ class Ui_LabToolWindow(object):
         LabToolWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(LabToolWindow)
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(3)
         self.output_source.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(LabToolWindow)
@@ -742,7 +743,7 @@ class Ui_LabToolWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Test</p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.measure_back.setText(_translate("LabToolWindow", "Back"))
         self.stop.setText(_translate("LabToolWindow", "Stop"))

@@ -133,7 +133,6 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         # Canvas
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
         self.previewStack.setCurrentIndex(self.previewStack.addWidget(self.canvas))
 
         self.module_axes = self.figure.add_subplot(1, 2, 1)
