@@ -9,6 +9,11 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+from matplotlib.lines import Line2D
+
 # labtool project modules
 from app.designer.window import Ui_LabToolWindow
 
@@ -124,6 +129,15 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         # ThreadPool
         self.thread_pool = QThreadPool()
         self.worker = None
+
+        # Canvas
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.previewStack.setCurrentIndex(self.previewStack.addWidget(self.canvas))
+
+        self.module_axes = self.figure.add_subplot(1, 2, 1)
+        self.phase_axes = self.figure.add_subplot(1, 2, 2)
 
     ##############################
     # Device Connection Routines #
@@ -292,6 +306,9 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         self.worker.signals.progress.connect(self.set_progress)
         self.thread_pool.start(worker)
 
+        self.module_axes.clear()
+        self.phase_axes.clear()
+
     ###########################
     # Measure Output Routines #
     ###########################
@@ -310,6 +327,13 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         self.measure_back.setEnabled(True)
         self.export_excel.setEnabled(True)
         self.bode_measures = result
+
+        frequency = [measure["frequency"] for measure in self.bode_measures]
+        module = [measure["module"] for measure in self.bode_measures]
+        phase = [measure["phase"] for measure in self.bode_measures]
+
+        self.module_axes.add_line(Line2D(frequency, module))
+        self.phase_axes.add_line(Line2D(frequency, phase))
 
     def export(self):
         """ Exports measure data as excel file! """
