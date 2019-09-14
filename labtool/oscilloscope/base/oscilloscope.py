@@ -243,7 +243,7 @@ class Oscilloscope(Instrument, ABC):
         pass
 
     @abstractmethod
-    def set_nf_reject(self, value: bool):
+    def set_n_reject(self, value: bool):
         """ Setting the NFReject """
         pass
 

@@ -83,8 +83,8 @@ if __name__ == "__main__":
     console("Welcome to the LabTool! In order to measure a bode diagram, you will need an oscilloscope and a generator.")
 
     # Opening needed devices
-    oscilloscope = LabTool.open_device(InstrumentType.Oscilloscope)
-    generator = LabTool.open_device(InstrumentType.Generator)
+    oscilloscope = LabTool.open_device_by_type(InstrumentType.Oscilloscope)
+    generator = LabTool.open_device_by_type(InstrumentType.Generator)
 
     # Setup or configuration objects
     input_channel_setup = output_channel_setup = {

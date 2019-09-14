@@ -50,7 +50,7 @@ class DeviceNotFound(Exception):
 ###################################
 
 class LabTool(object):
-    """ LabTool static methods """
+    """ LabTool backend logic methods. """
 
     # Available devices in the LabTool
     available_oscilloscopes = []
@@ -66,36 +66,84 @@ class LabTool(object):
         DONE = "Done"
 
     @staticmethod
-    def open_device(instrument_type: InstrumentType) -> Instrument:
-        """ open_device() returns an instance of an Instrument interface by detecting all connected models.
-            IMPORTANT! In order to detect instruments, devices should be imported for
-            LabTool to be able to detect them.
+    def open_device_by_type(resource_type: InstrumentType) -> Instrument:
+        """ Returns an Instrument interface to handle communication with the given type of instrument if connected.
+        If no instruments are found, DeviceNotFound will be raised. """
+        resources = LabTool.get_devices()
+        for resource in resources:
+            if LabTool.is_device_detected(resource) is resource_type:
+                return LabTool.open_device_by_id(resource)
 
-            Note: This first version runs opening any detected device corresponding with the intrsument type.
+        raise DeviceNotFound
 
-            [OPTIONS]
-                + instrument_type: What kind of instrument should be detected
-                """
-        # Creating the resource manager and interface
+    @staticmethod
+    def open_device_by_id(resource_id: str) -> Instrument:
+        """ Returns an Instrument interface to handle communication with the given Device """
+        resource_info = LabTool.get_device_information(resource_id)
+        resource_type = LabTool.is_device_detected(resource_info)
+        if resource_type is InstrumentType.Oscilloscope:
+            for oscilloscope in LabTool.available_oscilloscopes:
+                if oscilloscope.model == resource_info["model"]:
+                    return oscilloscope(resource_id)
+        elif resource_type is InstrumentType.Generator:
+            for generator in LabTool.available_generators:
+                if generator.model == resource_info["model"]:
+                    return generator(resource_id)
+        else:
+            raise DeviceNotFound
+
+    @staticmethod
+    def is_device_detected(resource_information: dict) -> InstrumentType:
+        """ Returns whether the Instrument has or not an interface installed with the LabTool packaged,
+        in order to be used when connected.
+        Returns -> InstrumentType if detected, None if was not detected. """
+
+        # Veryfing if connected instrument is an oscilloscope
+        for oscilloscope in LabTool.available_oscilloscopes:
+            if oscilloscope.model == resource_information["model"]:
+                return InstrumentType.Oscilloscope
+
+        # Veryfing if connected instrument is a generator
+        for generator in LabTool.available_generators:
+            if generator.model == resource_information["model"]:
+                return InstrumentType.Generator
+
+        # Not detected...
+        return None
+
+    @staticmethod
+    def get_devices() -> list:
+        """ Returns a list of the currently connected devices, by returning their
+        resource identifier internal to the PyVisa package. """
         resource_manager = pyvisa.ResourceManager()
         resources = resource_manager.list_resources()
-        for resource in resources:
-            # Requesting the standard visa identification code
-            interface = resource_manager.open_resource(resource)
-            model_name = interface.query("*IDN?").split(",")[1]
-            interface.close()
-            # Searching an interface for that device model
-            if instrument_type is InstrumentType.Oscilloscope:
-                for oscilloscope in LabTool.available_oscilloscopes:
-                    if oscilloscope.model == model_name:
-                        return oscilloscope(resource)
-            elif instrument_type is InstrumentType.Generator:
-                for generator in LabTool.available_generators:
-                    if generator.model == model_name:
-                        return generator(resource)
+        resource_manager.close()
+        return list(resources)
 
-        # Raising exception...
-        raise DeviceNotFound
+    @staticmethod
+    def get_device_information(resource_id: str) -> list:
+        """ Given a resource's identification returned by the PyVisa package ResourceManager,
+            its information is returned, as follows:
+            Returns -> {
+                "brand": Instrument Brand,
+                "model": Instrument Model,
+                "series-number": Instrument Series Number
+            }
+
+            Note: It is being assumed that all instruments connected through VISA respond to a
+            *IDN? command.
+        """
+        resource_manager = pyvisa.ResourceManager()
+        resource_interface = resource_manager.open_resource(resource_id)
+        identification = resource_interface.query("*IDN?").split(",")
+        resource_interface.close()
+        resource_manager.close()
+
+        return {
+            "brand": identification[0],
+            "model": identification[1],
+            "series-number": identification[2]
+        }
 
     @staticmethod
     def add_oscilloscope(oscilloscope):

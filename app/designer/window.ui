@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>LabToolWindow</class>
+ <widget class="QMainWindow" name="LabToolWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="device_page">
        <property name="sizePolicy">
@@ -178,7 +178,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>3</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="input_channel">
            <attribute name="title">
@@ -498,6 +498,20 @@
                  </property>
                  <property name="buttonSymbols">
                   <enum>QAbstractSpinBox::NoButtons</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="1">
+                <widget class="QCheckBox" name="hfReject">
+                 <property name="text">
+                  <string>HFReject</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="0">
+                <widget class="QCheckBox" name="nReject">
+                 <property name="text">
+                  <string>NReject</string>
                  </property>
                 </widget>
                </item>

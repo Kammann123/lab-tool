@@ -58,6 +58,7 @@ class Instrument(object):
             resource.write_termination = "\n"
             resource.read_termination = "\n"
             self.resource = DelayedResource(resource)
+            resource_manager.close()
         except:
             raise ResourceNotFound
 
