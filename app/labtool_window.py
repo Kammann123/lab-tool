@@ -28,6 +28,8 @@ from labtool.oscilloscope.base.oscilloscope import TriggerMode
 from labtool.oscilloscope.base.oscilloscope import TriggerSweep
 from labtool.oscilloscope.base.oscilloscope import TriggerSlope
 from labtool.oscilloscope.base.oscilloscope import Sources
+from labtool.oscilloscope.base.oscilloscope import AcquireMode
+from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 
 
 # Loading new available devices to use as Instruments...
@@ -135,9 +137,6 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         self.canvas = FigureCanvas(self.figure)
         self.previewStack.setCurrentIndex(self.previewStack.addWidget(self.canvas))
 
-        self.module_axes = self.figure.add_subplot(1, 2, 1)
-        self.phase_axes = self.figure.add_subplot(1, 2, 2)
-
     ##############################
     # Device Connection Routines #
     ##############################
@@ -146,8 +145,8 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         """ Connection establishment with devices """
         selected_oscilloscope_index = self.oscilloscopes.currentIndex()
         selected_generator_index = self.generators.currentIndex()
-        self.oscilloscope = LabTool.open_device_by_id(self.oscilloscopes[selected_oscilloscope_index][0])
-        self.generator = LabTool.open_device_by_id(self.generators[selected_generator_index][0])
+        self.oscilloscope = LabTool.open_device_by_id(self.oscilloscope_devices[selected_oscilloscope_index][0])
+        self.generator = LabTool.open_device_by_id(self.generator_devices[selected_generator_index][0])
         self.stackedWidget.setCurrentIndex(self.widget_map["MEASURING_SETTINGS"])
 
     def refresh_devices(self):
@@ -165,7 +164,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         devices = LabTool.get_devices()
         for device in devices:
             device_info = LabTool.get_device_information(device)
-            device_type = LabTool.is_device_detected(device)
+            device_type = LabTool.is_device_detected(device_info)
             if device_type is InstrumentType.Generator:
                 self.generator_devices.append([device, device_info])
             elif device_type is InstrumentType.Oscilloscope:
@@ -240,7 +239,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
 
         input_channel_setup = {
             "bandwidth_limit": self.input_bw.isChecked(),
-            "coupling": LabTool.to_enum(self.input_coupling, Coupling),
+            "coupling": LabTool.to_enum(self.input_coupling.currentText(), Coupling),
             "probe": int(self.input_probe.currentText()),
             "display": True,
             "range": 20,
@@ -249,7 +248,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
 
         output_channel_setup = {
             "bandwidth_limit": self.output_bw.isChecked(),
-            "coupling": LabTool.to_enum(self.output_coupling, Coupling),
+            "coupling": LabTool.to_enum(self.output_coupling.currentText(), Coupling),
             "probe": int(self.output_probe.currentText()),
             "display": True,
             "range": 20,
@@ -288,6 +287,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
             "amplitude": float(self.generator_vpp.value())
         }
 
+        self.oscilloscope.reset()
         self.worker = Worker(
             LabTool.run_bode,
             self.oscilloscope, self.generator,
@@ -303,10 +303,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         self.worker.signals.result.connect(self.measure_complete)
         self.worker.signals.log.connect(self.log_message)
         self.worker.signals.progress.connect(self.set_progress)
-        self.thread_pool.start(worker)
-
-        self.module_axes.clear()
-        self.phase_axes.clear()
+        self.thread_pool.start(self.worker)
 
     ###########################
     # Measure Output Routines #
@@ -314,7 +311,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
 
     def log_message(self, value: str):
         """ Logging a message in the console of the Measure Output window state. """
-        self.logger.setText(value)
+        self.logger.setText(self.logger.toPlainText() + value)
 
     def set_progress(self, value: int):
         """ Setting the current progress of the measuring process. """
@@ -328,15 +325,39 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         self.bode_measures = result
 
         frequency = [measure["frequency"] for measure in self.bode_measures]
-        module = [measure["module"] for measure in self.bode_measures]
-        phase = [measure["phase"] for measure in self.bode_measures]
+        module = [measure["bode-module"] for measure in self.bode_measures]
+        phase = [measure["bode-phase"] for measure in self.bode_measures]
 
-        self.module_axes.add_line(Line2D(frequency, module))
-        self.phase_axes.add_line(Line2D(frequency, phase))
+        self.figure.clear()
+
+        module_axes = self.figure.add_subplot(
+            1, 2, 1,
+            title="Bode Module",
+            xlabel="Frequency [Hz]",
+            ylabel="|H(f)|dB"
+        )
+
+        phase_axes = self.figure.add_subplot(
+            1, 2, 2,
+            title="Bode Phase",
+            xlabel="Frequency [Hz]",
+            ylabel="H(f)°"
+        )
+
+        module_axes.minorticks_on()
+        phase_axes.minorticks_on()
+
+        module_axes.grid(b=True, which="both", axis="both")
+        phase_axes.grid(b=True, which="both", axis="both")
+
+        module_axes.semilogx(frequency, module)
+        phase_axes.semilogx(frequency, phase)
+
+        self.canvas.draw()
 
     def export(self):
         """ Exports measure data as excel file! """
-        filepath, = QFileDialog.getSaveFileName()
+        filepath = QFileDialog.getSaveFileName()[0]
         LabTool.export_to_csv(filepath, self.bode_measures)
 
     def return_setting(self):
@@ -357,4 +378,5 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = LabToolWindow()
     window.show()
-    sys.exit(app.exec())
+    app.exec()
+    LabTool.close_manager()

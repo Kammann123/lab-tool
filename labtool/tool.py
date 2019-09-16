@@ -55,6 +55,7 @@ class LabTool(object):
     # Available devices in the LabTool
     available_oscilloscopes = []
     available_generators = []
+    resource_manager = None
 
     # Internal LabTool definitions
     class BodeStates(Enum):
@@ -64,6 +65,17 @@ class LabTool(object):
         STEP_SETUP = "Step setup"
         DOWNLOAD_DATA = "Download data"
         DONE = "Done"
+
+    @staticmethod
+    def get_manager() -> pyvisa.ResourceManager:
+        if LabTool.resource_manager is None:
+            LabTool.resource_manager = pyvisa.ResourceManager()
+        return LabTool.resource_manager
+
+    @staticmethod
+    def close_manager():
+        if LabTool.resource_manager is not None:
+            LabTool.resource_manager.close()
 
     @staticmethod
     def to_enum(value: str, enum: Enum):
@@ -121,9 +133,8 @@ class LabTool(object):
     def get_devices() -> list:
         """ Returns a list of the currently connected devices, by returning their
         resource identifier internal to the PyVisa package. """
-        resource_manager = pyvisa.ResourceManager()
+        resource_manager = LabTool.get_manager()
         resources = resource_manager.list_resources()
-        resource_manager.close()
         return list(resources)
 
     @staticmethod
@@ -139,16 +150,15 @@ class LabTool(object):
             Note: It is being assumed that all instruments connected through VISA respond to a
             *IDN? command.
         """
-        resource_manager = pyvisa.ResourceManager()
+        resource_manager = LabTool.get_manager()
         resource_interface = resource_manager.open_resource(resource_id)
         identification = resource_interface.query("*IDN?").split(",")
         resource_interface.close()
-        resource_manager.close()
 
         return {
-            "brand": identification[0],
-            "model": identification[1],
-            "series-number": identification[2]
+            "brand": identification[0].upper(),
+            "model": identification[1].upper(),
+            "series-number": identification[2].upper()
         }
 
     @staticmethod
@@ -220,8 +230,6 @@ class LabTool(object):
         max_frequency = bode_setup["stop-frequency"]
         samples = bode_setup["samples"]
 
-        beta = min_frequency
-        alpha = (max_frequency - min_frequency) / log10(samples)
         frequencies = list(logspace(log10(min_frequency), log10(max_frequency), num=samples))
 
         if bode_setup["scale"] is BodeScale.Linear:
@@ -274,7 +282,7 @@ class LabTool(object):
 
         def log(value: str):
             if log_callback is not None:
-                log_callback.emit("[LabTool] >> {}".format(value))
+                log_callback.emit("[LabTool] >> {}\n".format(value))
 
         # Bode setup parameter validation, raising exception
         # when not receiving the needed input data
@@ -294,13 +302,15 @@ class LabTool(object):
                 log("INITIAL_SETUP started.")
                 log("Setting up the Oscilloscope channels, trigger, timebase...")
 
+                osc.set_delay(bode_setup["delay"])
                 osc.reset()
+                osc.autoscale()
+
+                osc.setup_timebase(**timebase_setup)
                 osc.setup_channel(osc.source_to_channel(input_channel), **input_channel_setup)
                 osc.setup_channel(osc.source_to_channel(output_channel), **output_channel_setup)
-                osc.setup_trigger(**trigger_setup)
-                osc.setup_timebase(**timebase_setup)
                 osc.setup_acquire(**acquire_setup)
-                osc.set_delay(bode_setup["delay"])
+                osc.setup_trigger(**trigger_setup)
 
                 log("Setting up the Generator waveform, frequency, output...")
 
@@ -320,8 +330,13 @@ class LabTool(object):
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
                 osc.set_timebase_range(2 / LabTool.compute_frequency(bode_step, bode_setup))
 
+                # What the fuck.
                 LabTool.vertical_scale(osc, input_channel)
                 LabTool.vertical_scale(osc, output_channel)
+
+                LabTool.vertical_scale(osc, input_channel)
+                LabTool.vertical_scale(osc, output_channel)
+
                 LabTool.horizontal_scale(
                     osc,
                     input_channel, output_channel,
@@ -349,6 +364,7 @@ class LabTool(object):
                 bode_step += 1
                 if bode_step >= bode_setup["samples"]:
                     bode_state = LabTool.BodeStates.DONE
+                    progress(100)
                     log("Measuring process finished successfully!")
                 else:
                     bode_state = LabTool.BodeStates.STEP_SETUP

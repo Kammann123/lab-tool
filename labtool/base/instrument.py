@@ -39,6 +39,9 @@ class InstrumentType(Enum):
 class Instrument(object):
     """ Instrument base class """
 
+    # Higher ResourceManager control
+    resource_manager = None
+
     # Instrument information, static values for each class
     brand = "Instrument's Brand"
     model = "Instrument's Model"
@@ -51,14 +54,13 @@ class Instrument(object):
 
         try:
             # Creating an instance of ResourceManager and opening the given resource
-            resource_manager = pyvisa.ResourceManager()
+            resource_manager = pyvisa.ResourceManager() if Instrument.resource_manager is None else Instrument.resource_manager
             resource = resource_manager.open_resource(resource_name)
 
             # Setting up the resource
             resource.write_termination = "\n"
             resource.read_termination = "\n"
             self.resource = DelayedResource(resource)
-            resource_manager.close()
         except:
             raise ResourceNotFound
 
@@ -67,6 +69,9 @@ class Instrument(object):
             Closing the visa connection.
          """
         self.resource.close()
+
+        if Instrument.resource_manager is not None:
+            Instrument.resource_manager.close()
 
     def set_delay(self, delay):
         self.resource.set_delay(delay)
