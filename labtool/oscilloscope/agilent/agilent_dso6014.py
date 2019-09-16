@@ -269,6 +269,14 @@ class AgilentDSO6014(Oscilloscope):
     # MEASURE COMMANDS #
     ####################
 
+    def measure_vmax(self, source: Sources):
+        """ Measures the vmax voltage of the given source """
+        return self.resource.query(":MEAS:VMAX? {}".format(self.sources[source]))
+
+    def measure_vmin(self, source: Sources):
+        """ Measures the vmin voltage of the given source """
+        return self.resource.query(":MEAS:VMIN? {}".format(self.sources[source]))
+
     def measure_vpp(self, source: Sources):
         """ Measures the peak to peak voltage of the given source """
         return self.resource.query(":MEAS:VPP? {}".format(self.sources[source]))

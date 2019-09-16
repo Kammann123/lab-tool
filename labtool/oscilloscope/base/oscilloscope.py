@@ -290,6 +290,16 @@ class Oscilloscope(Instrument, ABC):
     ####################
 
     @abstractmethod
+    def measure_vmax(self, source: Sources):
+        """ Measures the vmax voltage of the given source """
+        pass
+
+    @abstractmethod
+    def measure_vmin(self, source: Sources):
+        """ Measures the vmin voltage of the given source """
+        pass
+
+    @abstractmethod
     def measure_vpp(self, source: Sources):
         """ Measures the peak to peak voltage of the given source """
         pass

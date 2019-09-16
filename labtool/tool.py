@@ -210,14 +210,19 @@ class LabTool(object):
     @staticmethod
     def vertical_scale(oscilloscope: Oscilloscope, source: Sources):
         """ Auto scaling the vertical axis of the Oscilloscope for the given source """
-        margin = 0.1
-        pattern = [10, 20, 50]
+        margin = 0.35
+        pattern = [1, 2, 5, 10, 20, 50]
         current = 0
         scale_complete = False
         while not scale_complete:
-            signal_vpp = float(oscilloscope.measure_vpp(source))
+            signal_vpp = max(
+                float(oscilloscope.measure_vpp(source)),
+                float(oscilloscope.measure_vmax(source)),
+                float(oscilloscope.measure_vmin(source))
+            )
             channel_vpp = float(oscilloscope.get_range(Oscilloscope.source_to_channel(source)))
             if signal_vpp < channel_vpp:
+                signal_vpp = float(oscilloscope.measure_vpp(source))
                 oscilloscope.set_range(Oscilloscope.source_to_channel(source), signal_vpp * (1 + margin))
                 scale_complete = True
             else:
@@ -334,9 +339,6 @@ class LabTool(object):
                 LabTool.vertical_scale(osc, input_channel)
                 LabTool.vertical_scale(osc, output_channel)
 
-                LabTool.vertical_scale(osc, input_channel)
-                LabTool.vertical_scale(osc, output_channel)
-
                 LabTool.horizontal_scale(
                     osc,
                     input_channel, output_channel,
@@ -368,6 +370,14 @@ class LabTool(object):
                     log("Measuring process finished successfully!")
                 else:
                     bode_state = LabTool.BodeStates.STEP_SETUP
+
+        # Filtering error values
+        bode_aux = []
+        for bode_measure in bode_measures:
+            if bode_measure["bode-module"] > 1e3 or bode_measure["bode-phase"] > 1e3:
+                continue
+            bode_aux.append(bode_measure)
+        bode_measures = bode_aux
 
         # Finished without errors, returning the result!
         return bode_measures
