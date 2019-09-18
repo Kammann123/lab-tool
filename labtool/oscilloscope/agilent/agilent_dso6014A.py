@@ -320,4 +320,4 @@ def is_power_of(target: int, power: int) -> bool:
 
 
 # Subscribing the new instrument to the lab-tool register
-LabTool.add_oscilloscope(AgilentDSO6014)
+LabTool.add_oscilloscope(AgilentDSO6014A)
