@@ -21,6 +21,7 @@ from labtool.oscilloscope.base.oscilloscope import Sources
 from labtool.generator.base.generator import Waveform
 from labtool.generator.base.generator import OutputLoad
 from labtool.generator.base.generator import OutputMode
+from labtool.oscilloscope.base.oscilloscope import AcquireMode
 
 from labtool.base.instrument import InstrumentType
 from labtool.base.instrument import Instrument
@@ -210,7 +211,7 @@ class LabTool(object):
     @staticmethod
     def vertical_scale(oscilloscope: Oscilloscope, source: Sources):
         """ Auto scaling the vertical axis of the Oscilloscope for the given source """
-        margin = 0.35
+        margin = 0.1
         pattern = [1, 2, 5, 10, 20, 50]
         current = 0
         scale_complete = False
@@ -314,7 +315,6 @@ class LabTool(object):
                 osc.setup_timebase(**timebase_setup)
                 osc.setup_channel(osc.source_to_channel(input_channel), **input_channel_setup)
                 osc.setup_channel(osc.source_to_channel(output_channel), **output_channel_setup)
-                osc.setup_acquire(**acquire_setup)
                 osc.setup_trigger(**trigger_setup)
 
                 log("Setting up the Generator waveform, frequency, output...")
@@ -335,7 +335,9 @@ class LabTool(object):
                 gen.set_frequency(LabTool.compute_frequency(bode_step, bode_setup))
                 osc.set_timebase_range(2 / LabTool.compute_frequency(bode_step, bode_setup))
 
-                # What the fuck.
+                # Yep, thank you noise!
+                osc.set_acquire_mode(AcquireMode.Normal)
+
                 LabTool.vertical_scale(osc, input_channel)
                 LabTool.vertical_scale(osc, output_channel)
 
@@ -349,6 +351,9 @@ class LabTool(object):
                 bode_state = LabTool.BodeStates.DOWNLOAD_DATA
 
             elif bode_state is LabTool.BodeStates.DOWNLOAD_DATA:
+                # When the oscilloscope is about to measure values, we set the AcquireSetup configuration
+                osc.setup_acquire(**acquire_setup)
+
                 input_vpp = float(osc.measure_vpp(input_channel))
                 output_vpp = float(osc.measure_vpp(output_channel))
                 ratio = float(osc.measure_vratio(output_channel, input_channel))

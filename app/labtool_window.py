@@ -224,7 +224,7 @@ class LabToolWindow(QMainWindow, Ui_LabToolWindow):
         # Trigger with no channels!
         trigger_source = self.trigger_source.currentText()
         if trigger_source != self.input_source.currentText() and trigger_source != self.output_source.currentText():
-            if trigger_source != Sources.External and trigger_source != Sources.Line:
+            if trigger_source != Sources.External.value and trigger_source != Sources.Line.value:
                 self.setting_status.setText("You're triggering without input, output, external or line sources...")
                 return
 
