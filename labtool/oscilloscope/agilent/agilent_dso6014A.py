@@ -31,8 +31,8 @@ class AverageCountError(Exception):
 #######################
 # Agilent model class #
 #######################
-class AgilentDSO6014(Oscilloscope):
-    """ Agilent DSO6014 Oscilloscope model """
+class AgilentDSO6014A(Oscilloscope):
+    """ Agilent DSO6014A Oscilloscope model """
 
     # Instrument information
     brand = "AGILENT"

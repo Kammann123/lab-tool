@@ -33,7 +33,8 @@ from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 
 
 # Loading new available devices to use as Instruments...
-from labtool.oscilloscope.agilent.agilent_dso6014 import AgilentDSO6014
+from labtool.oscilloscope.agilent.agilent_dso6014A import AgilentDSO6014A
+from labtool.oscilloscope.agilent.agilent_dso7014A import AgilentDSO7014A
 
 from labtool.generator.agilent.agilent_33220a import Agilent33220A
 

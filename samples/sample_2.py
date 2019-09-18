@@ -31,7 +31,7 @@ from labtool.tool import LabTool
 from labtool.tool import BodeScale
 
 # Loading the available devices into the LabTool package
-from labtool.oscilloscope.agilent.agilent_dso6014 import AgilentDSO6014
+from labtool.oscilloscope.agilent.agilent_dso6014A import AgilentDSO6014
 from labtool.generator.agilent.agilent_33220a import Agilent33220A
 
 
