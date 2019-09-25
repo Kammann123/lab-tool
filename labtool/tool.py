@@ -198,7 +198,7 @@ class LabTool(object):
     @staticmethod
     def horizontal_scale(oscilloscope: Oscilloscope, input_channel: Sources, output_channel: Sources, frequency: float):
         """ Auto scaling the horizontal axis of the Oscilloscope for the given source """
-        periods = 2
+        periods = 3
         scale_complete = False
         while not scale_complete:
             current_phase = float(oscilloscope.measure_phase(output_channel, input_channel))

@@ -45,7 +45,9 @@ class AgilentDSO6014A(Oscilloscope):
         Sources.Channel_3: "CHANnel3",
         Sources.Channel_4: "CHANnel4",
         Sources.External: "EXTernal",
-        Sources.Line: "LINE"
+        Sources.Line: "LINE",
+        Sources.Math: "MATH",
+        Sources.Function: "FUNCtion"
     }
 
     acquire_modes = {

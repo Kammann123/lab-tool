@@ -66,6 +66,8 @@ class Sources(Enum):
     Channel_5 = "Channel 5"
     Channel_6 = "Channel 6"
     External = "External"
+    Math = "Math"
+    Function = "Function"
     Line = "Line"
 
 
