@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import *
 
 # labtool project modules
 from app.designer.window.window import Ui_LabToolWindow
+from app.designer.oscilloscope_settings.oscilloscope_settings_dialog import OscilloscopeSettingsDialog
+from app.designer.generator_settings.generator_settings_dialog import GeneratorSettingsDialog
 
 from labtool.base.instrument import InstrumentType
 from labtool.tool import LabTool
@@ -26,6 +28,17 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
         self.connected_devices = []
         self.oscilloscope = None
         self.generator = None
+
+        # Children Dialogs
+        self.oscilloscope_settings_dialog = OscilloscopeSettingsDialog()
+        self.generator_settings_dialog = GeneratorSettingsDialog()
+
+        # Slot and signal connections
+        self.refresh.clicked.connect(self.on_refresh)
+        self.connection.clicked.connect(self.on_connect)
+        self.disconnection.clicked.connect(self.on_disconnect)
+        self.oscilloscope_settings.clicked.connect(self.on_oscilloscope_settings)
+        self.generator_settings.clicked.connect(self.on_generator_settings)
 
     ##############################
     # General MainWindow Methods #
@@ -124,10 +137,10 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
         self.go_device_connection()
 
     def on_oscilloscope_settings(self):
-        pass
+        self.oscilloscope_settings_dialog.exec()
 
     def on_generator_settings(self):
-        pass
+        self.generator_settings_dialog.exec()
 
 
 if __name__ == "__main__":

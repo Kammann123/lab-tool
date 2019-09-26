@@ -36,7 +36,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="device_page">
        <property name="sizePolicy">
@@ -281,7 +281,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
-              <widget class="QPushButton" name="disconnect">
+              <widget class="QPushButton" name="disconnection">
                <property name="text">
                 <string/>
                </property>
