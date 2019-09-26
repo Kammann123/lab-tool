@@ -9,9 +9,19 @@ from app.designer.oscilloscope_settings.oscilloscope_settings_dialog import Osci
 from app.designer.generator_settings.generator_settings_dialog import GeneratorSettingsDialog
 from app.designer.impedance.impedance_dialog import ImpedanceDialog
 from app.designer.bode.bode_dialog import BodeDialog
+from app.designer.output.output_dialog import OutputDialog
+
+from labtool.algorithm.bode_algorithm import BodeAlgorithm
+from labtool.algorithm.impedance_algorithm import ImpedanceAlgorithm
 
 from labtool.base.instrument import InstrumentType
 from labtool.tool import LabTool
+
+# Installing devices...(?)
+from labtool.oscilloscope.agilent.agilent_dso6014A import AgilentDSO6014A
+from labtool.oscilloscope.agilent.agilent_dso7014A import AgilentDSO7014A
+
+from labtool.generator.agilent.agilent_33220a import Agilent33220A
 
 
 class MainWindow(QMainWindow, Ui_LabToolWindow):
@@ -46,6 +56,8 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
         self.generator_settings.clicked.connect(self.on_generator_settings)
         self.measure_bode.clicked.connect(self.on_bode)
         self.measure_input_impedance.clicked.connect(self.on_impedance)
+
+        self.go_device_connection()
 
     ##############################
     # General MainWindow Methods #
@@ -96,7 +108,7 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
             [
                 connected_device["device-uid"]
                 for connected_device in self.connected_devices
-                if connected_device["device_type"] is InstrumentType.Generator
+                if connected_device["device-type"] is InstrumentType.Generator
             ]
         )
 
@@ -104,7 +116,7 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
             [
                 connected_device["device-uid"]
                 for connected_device in self.connected_devices
-                if connected_device["device_type"] is InstrumentType.Oscilloscope
+                if connected_device["device-type"] is InstrumentType.Oscilloscope
             ]
         )
 
@@ -122,11 +134,15 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
             )
 
         # Verifying if there are enough instruments selected to continue with the program
-        self.connection.setEnabled(len(self.oscilloscope_devices) and len(self.generator_devices))
+        self.connection.setEnabled(len(self.oscilloscopes.currentText()) and len(self.generators.currentText()))
 
     def on_connect(self):
         self.oscilloscope = self.open_device_by_uid(self.oscilloscopes.currentText())
         self.generator = self.open_device_by_uid(self.generators.currentText())
+
+        self.oscilloscope_used.setText(self.oscilloscopes.currentText())
+        self.generator_used.setText(self.generators.currentText())
+
         self.go_main_menu()
 
     def open_device_by_uid(self, uid: str):
@@ -151,11 +167,37 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
 
     def on_bode(self):
         if self.bode_dialog.exec():
-            pass
+            algorithm = BodeAlgorithm(
+                self.oscilloscope,
+                self.generator,
+                self.bode_dialog.make_requirements(),
+                self.oscilloscope_settings_dialog.make_channel_setup(),
+                self.oscilloscope_settings_dialog.make_trigger_setup(),
+                self.oscilloscope_settings_dialog.make_acquire_setup(),
+                self.oscilloscope_settings_dialog.make_timebase_setup(),
+                self.generator_settings_dialog.make_generator_setup(),
+                self.generator_settings_dialog.make_preferences_setup()
+            )
+
+            dialog = OutputDialog(algorithm)
+            dialog.exec()
 
     def on_impedance(self):
         if self.impedance_dialog.exec():
-            pass
+            algorithm = BodeAlgorithm(
+                self.oscilloscope,
+                self.generator,
+                self.impedance_dialog.make_requirements(),
+                self.oscilloscope_settings_dialog.make_channel_setup(),
+                self.oscilloscope_settings_dialog.make_trigger_setup(),
+                self.oscilloscope_settings_dialog.make_acquire_setup(),
+                self.oscilloscope_settings_dialog.make_timebase_setup(),
+                self.generator_settings_dialog.make_generator_setup(),
+                self.generator_settings_dialog.make_preferences_setup()
+            )
+
+            dialog = OutputDialog(algorithm)
+            dialog.exec()
 
 
 if __name__ == "__main__":

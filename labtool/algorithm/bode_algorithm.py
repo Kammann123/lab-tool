@@ -1,13 +1,31 @@
 # python native modules
 from enum import Enum
 from time import sleep
+from numpy import logspace, log10
 
 # third-party modules
 
 # labtool project modules
 from labtool.algorithm.base.measure_algorithm import MeasureAlgorithm
+
+from labtool.tool import LabTool
 from labtool.tool import BodeScale
 
+from labtool.base.instrument import InstrumentType
+
+from labtool.generator.base.generator import Waveform
+from labtool.generator.base.generator import OutputLoad
+from labtool.generator.base.generator import OutputMode
+
+from labtool.oscilloscope.base.oscilloscope import Sources
+from labtool.oscilloscope.base.oscilloscope import Coupling
+from labtool.oscilloscope.base.oscilloscope import TriggerMode
+from labtool.oscilloscope.base.oscilloscope import TriggerSweep
+from labtool.oscilloscope.base.oscilloscope import TriggerSlope
+from labtool.oscilloscope.base.oscilloscope import Sources
+from labtool.oscilloscope.base.oscilloscope import Oscilloscope
+from labtool.oscilloscope.base.oscilloscope import AcquireMode
+from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 
 class BodeStates(Enum):
     """ Internal states for defining a Bode simple FSM
@@ -43,8 +61,8 @@ class BodeAlgorithm(MeasureAlgorithm):
         while not scale_complete:
             current_phase = float(
                 self.oscilloscope.measure_phase(
-                    self.preferences_setup["output-channel"],
-                    self.preferences_setup["input-channel"]
+                    self.requirements["output-channel"],
+                    self.requirements["input-channel"]
                 )
             )
 
@@ -125,8 +143,8 @@ class BodeAlgorithm(MeasureAlgorithm):
                 self.oscilloscope.set_timebase_range(2 / self.compute_frequency(bode_step))
                 self.oscilloscope.set_acquire_mode(AcquireMode.Normal)
 
-                self.vertical_scale(input_channel)
-                self.vertical_scale(output_channel)
+                self.vertical_scale(self.requirements["input-channel"])
+                self.vertical_scale(self.requirements["output-channel"])
                 self.horizontal_scale(self.compute_frequency(bode_step))
 
                 sleep(self.preferences_setup["stable-time"])
@@ -135,10 +153,10 @@ class BodeAlgorithm(MeasureAlgorithm):
             elif bode_state is BodeStates.DOWNLOAD_DATA:
                 self.oscilloscope.setup_acquire(**self.acquire_setup)
 
-                input_vpp = float(self.oscilloscope.measure_vpp(input_channel))
-                output_vpp = float(self.oscilloscope.measure_vpp(output_channel))
-                ratio = float(self.oscilloscope.measure_vratio(output_channel, input_channel))
-                phase = float(self.oscilloscope.measure_phase(output_channel, input_channel))
+                input_vpp = float(self.oscilloscope.measure_vpp(self.requirements["input-channel"]))
+                output_vpp = float(self.oscilloscope.measure_vpp(self.requirements["output-channel"]))
+                ratio = float(self.oscilloscope.measure_vratio(self.requirements["output-channel"], self.requirements["input-channel"]))
+                phase = float(self.oscilloscope.measure_phase(self.requirements["output-channel"], self.requirements["input-channel"]))
                 bode_measures.append(
                     {
                         "frequency": self.compute_frequency(bode_step),

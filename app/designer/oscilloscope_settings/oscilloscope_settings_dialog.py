@@ -19,6 +19,8 @@ from labtool.oscilloscope.base.oscilloscope import TriggerSlope
 from labtool.oscilloscope.base.oscilloscope import Sources
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
 from labtool.oscilloscope.base.oscilloscope import TimebaseMode
+from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
+from labtool.oscilloscope.base.oscilloscope import ChannelStatus
 
 
 # noinspection PyMethodMayBeStatic
@@ -52,10 +54,10 @@ class OscilloscopeSettingsDialog(QDialog, Ui_OscSettings):
     def make_channel_setup(self) -> dict:
         """ Makes the setup object of a Channel """
         return {
-            "bandwidth_limit": self.bw.isChecked(),
+            "bandwidth_limit": BandwidthLimit.On if self.bw.isChecked() else BandwidthLimit.Off,
             "coupling": LabTool.to_enum(self.coupling.currentText(), Coupling),
             "probe": int(self.probe.currentText()),
-            "display": True,
+            "display": ChannelStatus.On,
             "range": 20,
             "offset": 0
         }

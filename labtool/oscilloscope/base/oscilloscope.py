@@ -30,6 +30,16 @@ class AcquireMode(Enum):
     PeakDetect = "PeakDetect"
 
 
+class BandwidthLimit(Enum):
+    On = "On"
+    Off = "Off"
+
+
+class ChannelStatus(Enum):
+    On = "On"
+    Off = "Off"
+
+
 class Coupling(Enum):
     AC = "AC"
     DC = "DC"

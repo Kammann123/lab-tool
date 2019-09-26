@@ -1,28 +1,140 @@
 # python native modules
 
 # third-party modules
-from PyQt5.Qt import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 
 # labtool project modules
 from app.designer.output.output import Ui_Dialog
 
+from labtool.algorithm.base.measure_algorithm import MeasureAlgorithm
+
+
+class WorkerSignals(QObject):
+    """ Defines the signals available from a running worker thread.
+
+    Supported signals are:
+        + finished: No data is sent
+        + error: tuple (exctype, value, traceback.format_exc() )
+        + result: `object` data returned from processing, anything
+        + progress: int indicating % progress
+        + log: str logging notificatons
+    """
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(object)
+    progress = pyqtSignal(int)
+    log = pyqtSignal(str)
+
+
+class Worker(QRunnable):
+    """ Worker Thread
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread. Supplied args and
+                     kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+    """
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+
+        # Add the callback to our kwargs
+        self.fn.progress_callback = self.signals.progress
+        self.fn.log_callback = self.signals.log
+
+    @pyqtSlot()
+    def run(self):
+        """ Initialise the runner function with passed args, kwargs. """
+        # Retrieve args/kwargs here; and fire processing using them
+        try:
+            result = self.fn(*self.args, **self.kwargs)
+        except:
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit(result)  # Return the result of the processing
+        finally:
+            self.signals.finished.emit()  # Done
+
 
 class OutputDialog(QDialog, Ui_Dialog):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, algorithm=None, *args, **kwargs):
         super(OutputDialog, self).__init__(*args, **kwargs)
         self.setupUi(self)
+        self.setWindowTitle("Output Dialog")
+        self.setFixedSize(self.size())
 
         # OutputDialog Members
-        self.results = []
+        self.algorithm = algorithm
+        self.worker = None
+        self.pool = QThreadPool()
+
         self.result_fields = []
+        self.results = []
+
+        # Slot and Signal connection
+        self.start_button.clicked.connect(self.on_start)
+        self.stop_button.clicked.connect(self.on_stop)
+        self.reset_button.clicked.connect(self.on_reset)
+
+    ######################################
+    # GUI Output Dialog Internal Methods #
+    ######################################
+    def start(self):
+        """ Starts the algorithm process """
+        if self.worker is None:
+            self.worker = Worker(self.algorithm)
+
+            self.worker.signals.progress.connect(self.set_progress)
+            self.worker.signals.result.connect(self.set_results)
+            self.worker.signals.log.connect(self.set_status)
+
+            self.pool.start(self.worker)
+
+    def stop(self):
+        """ Stops the algorithm process """
+        if self.worker is not None:
+            self.worker.stop()
+            self.worker = None
+
+    def reset(self):
+        """ Resets the algorithm process """
+        self.stop()
+        self.start()
 
     ###########################
     # GUI Output Dialog Slots #
     ###########################
     def on_stop(self):
         """ Stops the measuring process """
-        pass
+        self.stop()
+
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        self.reset_button.setEnabled(False)
+
+    def on_start(self):
+        """ Starts the measuring process """
+        self.start()
+
+        self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(True)
+        self.reset_button.setEnabled(True)
+
+    def on_reset(self):
+        """ Resets the measuring process """
+        self.reset()
 
     def on_excel(self):
         """ Exports the excel file """
@@ -57,7 +169,7 @@ class OutputDialog(QDialog, Ui_Dialog):
         self.fields.addItems(self.result_fields)
 
         # Enables the buttons
-        self.excel.setEnabled(True)
+        self.excel_button.setEnabled(True)
         self.plot.setEnabled(True)
 
 

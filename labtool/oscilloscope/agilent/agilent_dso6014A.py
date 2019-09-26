@@ -13,6 +13,8 @@ from labtool.oscilloscope.base.oscilloscope import TriggerSlope
 from labtool.oscilloscope.base.oscilloscope import TriggerSweep
 from labtool.oscilloscope.base.oscilloscope import WaveformFormat
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
+from labtool.oscilloscope.base.oscilloscope import BandwidthLimit
+from labtool.oscilloscope.base.oscilloscope import ChannelStatus
 
 from labtool.tool import LabTool
 
@@ -86,6 +88,16 @@ class AgilentDSO6014A(Oscilloscope):
         WaveformFormat.Ascii: "ASCii"
     }
 
+    bandwidth_limit = {
+        BandwidthLimit.On: "1",
+        BandwidthLimit.Off: "0"
+    }
+
+    channel_status = {
+        ChannelStatus.On: "1",
+        ChannelStatus.Off: "0"
+    }
+
     ###################
     # COMMON COMMANDS #
     ###################
@@ -141,9 +153,9 @@ class AgilentDSO6014A(Oscilloscope):
     # CHANNEL COMMANDS #
     ####################
 
-    def set_bandwidth_limit(self, channel: int, status: bool):
+    def set_bandwidth_limit(self, channel: int, bw: BandwidthLimit):
         """ Sets the status of the BandwidthLimit """
-        self.resource.write(":CHAN{}:BWL {}".format(channel, "1" if status else "0"))
+        self.resource.write(":CHAN{}:BWL {}".format(channel, self.bandwidth_limit[bw]))
 
     def set_coupling(self, channel: int, status: Coupling):
         """ Sets the status of the Coupling """
@@ -165,12 +177,12 @@ class AgilentDSO6014A(Oscilloscope):
         """ Sets the vertical scale of the channel """
         self.resource.write(":CHAN{}:SCAL {}".format(channel, scale_value))
 
-    def set_display(self, channel: int, status: bool):
+    def set_display(self, channel: int, status: ChannelStatus):
         """ Sets the Channel Status in the oscilloscope's display """
         self.resource.write(
             ":CHAN{}:DISP {}".format(
                 channel,
-                "1" if status else "0"
+                self.channel_status[status]
             )
         )
 
