@@ -42,3 +42,6 @@ class MeasureAlgorithm(object):
 
     def __call__(self, *args, **kwargs):
         raise NotImplemented
+
+    def what(self) -> str:
+        raise NotImplemented

@@ -18,6 +18,7 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.setWindowTitle("LabTool")
+        self.setFixedSize(self.size())
 
         # MainWindow internal members
         self.widget_map = {
