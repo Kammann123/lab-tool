@@ -4,6 +4,8 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+import pandas
+
 # labtool project modules
 from app.designer.output.output import Ui_Dialog
 
@@ -98,6 +100,9 @@ class OutputDialog(QDialog, Ui_Dialog):
         self.stop_button.clicked.connect(self.on_stop)
         self.reset_button.clicked.connect(self.on_reset)
 
+        self.excel_button.clicked.connect(self.on_excel)
+        self.plot.clicked.connect(self.on_plot)
+
     ######################################
     # GUI Output Dialog Internal Methods #
     ######################################
@@ -148,7 +153,20 @@ class OutputDialog(QDialog, Ui_Dialog):
 
     def on_excel(self):
         """ Exports the excel file """
-        pass
+        # Opening where the excel is going to be saved
+        filepath = QFileDialog.getSaveFileName()[0]
+
+        # Formatting data to be saved in the excel
+        dictionary = {field: [] for field in self.result_fields}
+        for field in dictionary.keys():
+            for result in self.results:
+                dictionary[field].append(result[field])
+        dataframe = pandas.DataFrame(dictionary)
+
+        # Saving the excel file
+        writer = pandas.ExcelWriter("{}.xlsx".format(filepath), engines="xlsxwriter")
+        dataframe.to_excel(writer, sheet_name="Measure Output")
+        writer.save()
 
     def on_plot(self):
         """ Open the plot dialog """
