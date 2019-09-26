@@ -98,7 +98,7 @@ class BodeAlgorithm(MeasureAlgorithm):
         # FSM working loop...
         while bode_state is not BodeStates.DONE:
             if bode_state is BodeStates.INITIAL_SETUP:
-                # self.progress.emit(0)
+                self.progress(0)
 
                 self.oscilloscope.set_delay(self.preferences_setup["delay"])
                 self.oscilloscope.reset()
@@ -119,7 +119,7 @@ class BodeAlgorithm(MeasureAlgorithm):
                 bode_state = BodeStates.STEP_SETUP
 
             elif bode_state is BodeStates.STEP_SETUP:
-                # self.progress.emit(bode_step * 100 / self.preferences_setup["samples"])
+                self.progress(bode_step * 100 / self.preferences_setup["samples"])
 
                 self.generator.set_frequency(self.compute_frequency(bode_step))
                 self.oscilloscope.set_timebase_range(2 / self.compute_frequency(bode_step))
@@ -152,7 +152,7 @@ class BodeAlgorithm(MeasureAlgorithm):
                 bode_step += 1
                 if bode_step >= self.preferences_setup["samples"]:
                     bode_state = BodeStates.DONE
-                    # self.progress.emit(100)
+                    self.progress(100)
                 else:
                     bode_state = BodeStates.STEP_SETUP
 

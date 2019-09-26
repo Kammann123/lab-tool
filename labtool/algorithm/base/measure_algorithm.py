@@ -24,6 +24,7 @@ class MeasureAlgorithm(object):
                  timebase_setup: dict,
                  generator_setup: dict,
                  preferences_setup: dict):
+        # Internal members of the Measurement Algorithms
         self.oscilloscope = oscilloscope
         self.generator = generator
         self.channel_setup = channel_setup
@@ -34,8 +35,20 @@ class MeasureAlgorithm(object):
         self.preferences_setup = preferences_setup
         self.requirements = requirements
 
+        # Callbacks
+        self.progress_callback = None
+        self.log_callback = None
+
     def __call__(self, *args, **kwargs):
         raise NotImplemented
+
+    def progress(self, progress: int):
+        if self.progress_callback is not None:
+            self.progress_callback.emit(progress)
+
+    def log(self, status: str):
+        if self.log_callback is not None:
+            self.log_callback.emit(status)
 
     def what(self) -> str:
         raise NotImplemented

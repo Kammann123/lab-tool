@@ -76,6 +76,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="excel">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -213,6 +216,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item alignment="Qt::AlignHCenter">
          <widget class="QPushButton" name="plot">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="minimumSize">
            <size>
             <width>150</width>

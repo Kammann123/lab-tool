@@ -17,6 +17,21 @@ class OutputDialog(QDialog, Ui_Dialog):
         self.results = []
         self.result_fields = []
 
+    ###########################
+    # GUI Output Dialog Slots #
+    ###########################
+    def on_stop(self):
+        """ Stops the measuring process """
+        pass
+
+    def on_excel(self):
+        """ Exports the excel file """
+        pass
+
+    def on_plot(self):
+        """ Open the plot dialog """
+        pass
+
     ###############################
     # GUI Output Dialog Interface #
     ###############################
@@ -40,6 +55,10 @@ class OutputDialog(QDialog, Ui_Dialog):
         # Set the fields of the GUI
         self.fields.clear()
         self.fields.addItems(self.result_fields)
+
+        # Enables the buttons
+        self.excel.setEnabled(True)
+        self.plot.setEnabled(True)
 
 
 if __name__ == "__main__":
