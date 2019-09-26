@@ -75,3 +75,6 @@ class Instrument(object):
 
     def set_delay(self, delay):
         self.resource.set_delay(delay)
+
+    def close(self):
+        self.resource.close()

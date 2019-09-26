@@ -33,3 +33,6 @@ class DelayedResource(object):
         buffer = self.resource.query(*args, **kwargs)
         time.sleep(self.delay)
         return buffer
+
+    def close(self):
+        self.resource.close()
