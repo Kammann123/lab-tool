@@ -39,8 +39,9 @@ class MeasureAlgorithm(object):
         self.progress_callback = None
         self.log_callback = None
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplemented
+        # Internal variables
+        self.result = None
+        self.finished = False
 
     def progress(self, progress: int):
         if self.progress_callback is not None:
@@ -50,5 +51,14 @@ class MeasureAlgorithm(object):
         if self.log_callback is not None:
             self.log_callback.emit(status)
 
+    def finish(self):
+        self.finished = True
+
+    def __call__(self, *args, **kwargs):
+        raise NotImplemented
+
     def what(self) -> str:
+        raise NotImplemented
+
+    def reset(self):
         raise NotImplemented

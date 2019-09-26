@@ -27,6 +27,7 @@ from labtool.oscilloscope.base.oscilloscope import Oscilloscope
 from labtool.oscilloscope.base.oscilloscope import AcquireMode
 from labtool.oscilloscope.base.oscilloscope import TimebaseMode
 
+
 class BodeStates(Enum):
     """ Internal states for defining a Bode simple FSM
     when working with the oscilloscope and the generator. """
@@ -37,6 +38,13 @@ class BodeStates(Enum):
 
 
 class BodeAlgorithm(MeasureAlgorithm):
+
+    def __init__(self, *args, **kwargs):
+        super(BodeAlgorithm, self).__init__(*args, **kwargs)
+
+        self.bode_state = BodeStates.INITIAL_SETUP
+        self.bode_measures = []
+        self.bode_step = 0
 
     def compute_frequency(self, step: int):
         min_frequency = self.preferences_setup["start-frequency"]
@@ -108,82 +116,80 @@ class BodeAlgorithm(MeasureAlgorithm):
                         }
                     ]
         """
-        # Initializing variables for running the fsm...
-        bode_state = BodeStates.INITIAL_SETUP
-        bode_measures = []
-        bode_step = 0
+        if self.bode_state is BodeStates.INITIAL_SETUP:
+            self.progress(0)
 
-        # FSM working loop...
-        while bode_state is not BodeStates.DONE:
-            if bode_state is BodeStates.INITIAL_SETUP:
-                self.progress(0)
+            self.oscilloscope.set_delay(self.preferences_setup["delay"])
+            self.oscilloscope.reset()
+            self.oscilloscope.autoscale()
 
-                self.oscilloscope.set_delay(self.preferences_setup["delay"])
-                self.oscilloscope.reset()
-                self.oscilloscope.autoscale()
+            self.oscilloscope.setup_timebase(**self.timebase_setup)
+            self.oscilloscope.setup_channel(self.oscilloscope.source_to_channel(self.requirements["input-channel"]), **self.channel_setup)
+            self.oscilloscope.setup_channel(self.oscilloscope.source_to_channel(self.requirements["output-channel"]), **self.channel_setup)
+            self.oscilloscope.setup_trigger(**self.trigger_setup)
 
-                self.oscilloscope.setup_timebase(**self.timebase_setup)
-                self.oscilloscope.setup_channel(self.oscilloscope.source_to_channel(self.requirements["input-channel"]), **self.channel_setup)
-                self.oscilloscope.setup_channel(self.oscilloscope.source_to_channel(self.requirements["output-channel"]), **self.channel_setup)
-                self.oscilloscope.setup_trigger(**self.trigger_setup)
+            self.generator.reset()
+            self.generator.set_waveform(Waveform.Sine)
+            self.generator.set_frequency(self.compute_frequency(self.bode_step))
+            self.generator.set_output_load(None, OutputLoad.HighZ)
+            self.generator.set_amplitude(self.generator_setup["amplitude"])
+            self.generator.set_output_mode(OutputMode.ON)
 
-                self.generator.reset()
-                self.generator.set_waveform(Waveform.Sine)
-                self.generator.set_frequency(self.compute_frequency(bode_step))
-                self.generator.set_output_load(None, OutputLoad.HighZ)
-                self.generator.set_amplitude(self.generator_setup["amplitude"])
-                self.generator.set_output_mode(OutputMode.ON)
+            self.bode_state = BodeStates.STEP_SETUP
 
-                bode_state = BodeStates.STEP_SETUP
+        elif self.bode_state is BodeStates.STEP_SETUP:
+            self.progress(self.bode_step * 100 / self.preferences_setup["samples"])
 
-            elif bode_state is BodeStates.STEP_SETUP:
-                self.progress(bode_step * 100 / self.preferences_setup["samples"])
+            self.generator.set_frequency(self.compute_frequency(self.bode_step))
+            self.oscilloscope.set_timebase_range(2 / self.compute_frequency(self.bode_step))
+            self.oscilloscope.set_acquire_mode(AcquireMode.Normal)
 
-                self.generator.set_frequency(self.compute_frequency(bode_step))
-                self.oscilloscope.set_timebase_range(2 / self.compute_frequency(bode_step))
-                self.oscilloscope.set_acquire_mode(AcquireMode.Normal)
+            self.vertical_scale(self.requirements["input-channel"])
+            self.vertical_scale(self.requirements["output-channel"])
+            self.horizontal_scale(self.compute_frequency(self.bode_step))
 
-                self.vertical_scale(self.requirements["input-channel"])
-                self.vertical_scale(self.requirements["output-channel"])
-                self.horizontal_scale(self.compute_frequency(bode_step))
+            sleep(self.preferences_setup["stable-time"])
+            self.bode_state = BodeStates.DOWNLOAD_DATA
 
-                sleep(self.preferences_setup["stable-time"])
-                bode_state = BodeStates.DOWNLOAD_DATA
+        elif self.bode_state is BodeStates.DOWNLOAD_DATA:
+            self.oscilloscope.setup_acquire(**self.acquire_setup)
 
-            elif bode_state is BodeStates.DOWNLOAD_DATA:
-                self.oscilloscope.setup_acquire(**self.acquire_setup)
+            input_vpp = float(self.oscilloscope.measure_vpp(self.requirements["input-channel"]))
+            output_vpp = float(self.oscilloscope.measure_vpp(self.requirements["output-channel"]))
+            ratio = float(self.oscilloscope.measure_vratio(self.requirements["output-channel"], self.requirements["input-channel"]))
+            phase = float(self.oscilloscope.measure_phase(self.requirements["output-channel"], self.requirements["input-channel"]))
+            self.bode_measures.append(
+                {
+                    "frequency": self.compute_frequency(self.bode_step),
+                    "input-vpp": input_vpp,
+                    "output-vpp": output_vpp,
+                    "bode-module": ratio,
+                    "bode-phase": phase
+                }
+            )
 
-                input_vpp = float(self.oscilloscope.measure_vpp(self.requirements["input-channel"]))
-                output_vpp = float(self.oscilloscope.measure_vpp(self.requirements["output-channel"]))
-                ratio = float(self.oscilloscope.measure_vratio(self.requirements["output-channel"], self.requirements["input-channel"]))
-                phase = float(self.oscilloscope.measure_phase(self.requirements["output-channel"], self.requirements["input-channel"]))
-                bode_measures.append(
-                    {
-                        "frequency": self.compute_frequency(bode_step),
-                        "input-vpp": input_vpp,
-                        "output-vpp": output_vpp,
-                        "bode-module": ratio,
-                        "bode-phase": phase
-                    }
-                )
+            self.bode_step += 1
+            if self.bode_step >= self.preferences_setup["samples"]:
+                self.bode_state = BodeStates.DONE
+                self.progress(100)
+            else:
+                self.bode_state = BodeStates.STEP_SETUP
 
-                bode_step += 1
-                if bode_step >= self.preferences_setup["samples"]:
-                    bode_state = BodeStates.DONE
-                    self.progress(100)
-                else:
-                    bode_state = BodeStates.STEP_SETUP
-
-        # Filtering error values
-        bode_aux = []
-        for bode_measure in bode_measures:
-            if bode_measure["bode-module"] > 1e3 or bode_measure["bode-phase"] > 1e3:
-                continue
-            bode_aux.append(bode_measure)
-        bode_measures = bode_aux
-
-        # Finished without errors, returning the result!
-        return bode_measures
+        elif self.bode_state is BodeStates.DONE:
+            bode_aux = []
+            for bode_measure in self.bode_measures:
+                if bode_measure["bode-module"] > 1e3 or bode_measure["bode-phase"] > 1e3:
+                    continue
+                bode_aux.append(bode_measure)
+            self.result = bode_aux
+            self.finish()
 
     def what(self):
         return "Measuring bode plots of the system"
+
+    def reset(self):
+        self.bode_state = BodeStates.INITIAL_SETUP
+        self.bode_measures = []
+        self.bode_step = 0
+        self.result = None
+        self.finished = False

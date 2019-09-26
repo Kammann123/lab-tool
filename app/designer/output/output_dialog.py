@@ -47,22 +47,32 @@ class Worker(QRunnable):
         self.kwargs = kwargs
         self.signals = WorkerSignals()
 
+        self.stopped = False
+        self.fn.reset()
+
         # Add the callback to our kwargs
         self.fn.progress_callback = self.signals.progress
         self.fn.log_callback = self.signals.log
+
+    @pyqtSlot()
+    def stop(self):
+        self.stopped = True
 
     @pyqtSlot()
     def run(self):
         """ Initialise the runner function with passed args, kwargs. """
         # Retrieve args/kwargs here; and fire processing using them
         try:
-            result = self.fn(*self.args, **self.kwargs)
+            while not self.stopped:
+                if not self.fn.finished:
+                    self.fn(*self.args, **self.kwargs)
+                else:
+                    self.signals.result.emit(self.fn.result)
+                    break
         except:
             traceback.print_exc()
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
-        else:
-            self.signals.result.emit(result)  # Return the result of the processing
         finally:
             self.signals.finished.emit()  # Done
 
@@ -157,20 +167,21 @@ class OutputDialog(QDialog, Ui_Dialog):
 
     def set_results(self, results: list):
         """ Sets the list of samples defined as dictionaries """
-        # Save current result values
-        self.results = results
-        self.result_fields = self.results[0].keys()
+        if results is not None:
+            # Save current result values
+            self.results = results
+            self.result_fields = self.results[0].keys()
 
-        # Set the sample field of the GUI
-        self.samples.setValue(len(self.results))
+            # Set the sample field of the GUI
+            self.samples.setValue(len(self.results))
 
-        # Set the fields of the GUI
-        self.fields.clear()
-        self.fields.addItems(self.result_fields)
+            # Set the fields of the GUI
+            self.fields.clear()
+            self.fields.addItems(self.result_fields)
 
-        # Enables the buttons
-        self.excel_button.setEnabled(True)
-        self.plot.setEnabled(True)
+            # Enables the buttons
+            self.excel_button.setEnabled(True)
+            self.plot.setEnabled(True)
 
 
 if __name__ == "__main__":

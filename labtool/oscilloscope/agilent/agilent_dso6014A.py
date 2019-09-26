@@ -54,7 +54,7 @@ class AgilentDSO6014A(Oscilloscope):
 
     acquire_modes = {
         AcquireMode.Normal: "NORMal",
-        AcquireMode.Average: "AVERage",
+        AcquireMode.Average: "AVERages>",
         AcquireMode.HighResolution: "HRESolution",
         AcquireMode.PeakDetect: "PEAK"
     }
