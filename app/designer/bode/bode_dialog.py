@@ -21,6 +21,8 @@ class BodeDialog(QDialog, Ui_Dialog):
         self.output_channel.currentTextChanged.connect(self.on_changes)
         self.ok.clicked.connect(self.on_ok)
 
+        self.on_changes()
+
     def make_requirements(self) -> dict:
         """ Returns a dictionary with Requirements data to run a bode measurement algorithm """
         return {

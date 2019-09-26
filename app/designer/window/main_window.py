@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import *
 from app.designer.window.window import Ui_LabToolWindow
 from app.designer.oscilloscope_settings.oscilloscope_settings_dialog import OscilloscopeSettingsDialog
 from app.designer.generator_settings.generator_settings_dialog import GeneratorSettingsDialog
+from app.designer.impedance.impedance_dialog import ImpedanceDialog
+from app.designer.bode.bode_dialog import BodeDialog
 
 from labtool.base.instrument import InstrumentType
 from labtool.tool import LabTool
@@ -33,6 +35,8 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
         # Children Dialogs
         self.oscilloscope_settings_dialog = OscilloscopeSettingsDialog()
         self.generator_settings_dialog = GeneratorSettingsDialog()
+        self.bode_dialog = BodeDialog()
+        self.impedance_dialog = ImpedanceDialog()
 
         # Slot and signal connections
         self.refresh.clicked.connect(self.on_refresh)
@@ -40,6 +44,8 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
         self.disconnection.clicked.connect(self.on_disconnect)
         self.oscilloscope_settings.clicked.connect(self.on_oscilloscope_settings)
         self.generator_settings.clicked.connect(self.on_generator_settings)
+        self.measure_bode.clicked.connect(self.on_bode)
+        self.measure_input_impedance.clicked.connect(self.on_impedance)
 
     ##############################
     # General MainWindow Methods #
@@ -142,6 +148,14 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
 
     def on_generator_settings(self):
         self.generator_settings_dialog.exec()
+
+    def on_bode(self):
+        if self.bode_dialog.exec():
+            pass
+
+    def on_impedance(self):
+        if self.impedance_dialog.exec():
+            pass
 
 
 if __name__ == "__main__":

@@ -14,12 +14,6 @@ class MeasureAlgorithm(object):
     and set up values.
     """
 
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    progress = pyqtSignal(int)
-    log = pyqtSignal(str)
-    result = pyqtSignal(object)
-
     def __init__(self,
                  oscilloscope: Oscilloscope,
                  generator: Generator,
@@ -30,7 +24,7 @@ class MeasureAlgorithm(object):
                  timebase_setup: dict,
                  generator_setup: dict,
                  preferences_setup: dict):
-        self.oscillscope = oscilloscope
+        self.oscilloscope = oscilloscope
         self.generator = generator
         self.channel_setup = channel_setup
         self.trigger_setup = trigger_setup
