@@ -1,0 +1,22 @@
+<RCC>
+  <qresource prefix="osc_button">
+    <file>osc_button.png</file>
+  </qresource>
+  <qresource prefix="disconnect_button">
+    <file>forbidden.png</file>
+  </qresource>
+  <qresource prefix="refresh">
+    <file>refresh_normal.png</file>
+    <file>refresh_pressed.png</file>
+    <file>refresh_hover.png</file>
+  </qresource>
+  <qresource prefix="bode">
+    <file>Band-pass_filter_symbol.svg.png</file>
+  </qresource>
+  <qresource prefix="impedance">
+    <file>omega.png</file>
+  </qresource>
+  <qresource prefix="settings_button">
+    <file>settings.png</file>
+  </qresource>
+</RCC>
