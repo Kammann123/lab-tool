@@ -62,3 +62,6 @@ class MeasureAlgorithm(object):
 
     def reset(self):
         raise NotImplemented
+
+    def get_result(self):
+        raise NotImplemented

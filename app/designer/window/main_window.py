@@ -184,7 +184,7 @@ class MainWindow(QMainWindow, Ui_LabToolWindow):
 
     def on_impedance(self):
         if self.impedance_dialog.exec():
-            algorithm = BodeAlgorithm(
+            algorithm = ImpedanceAlgorithm(
                 self.oscilloscope,
                 self.generator,
                 self.impedance_dialog.make_requirements(),

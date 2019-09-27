@@ -8,6 +8,7 @@ import pandas
 
 # labtool project modules
 from app.designer.output.output import Ui_Dialog
+from app.designer.plotter.plotter_dialog import PlotterDialog
 
 from labtool.algorithm.base.measure_algorithm import MeasureAlgorithm
 
@@ -69,7 +70,7 @@ class Worker(QRunnable):
                 if not self.fn.finished:
                     self.fn(*self.args, **self.kwargs)
                 else:
-                    self.signals.result.emit(self.fn.result)
+                    self.signals.result.emit(self.fn.get_result())
                     break
         except:
             traceback.print_exc()
@@ -170,7 +171,8 @@ class OutputDialog(QDialog, Ui_Dialog):
 
     def on_plot(self):
         """ Open the plot dialog """
-        pass
+        plotter_dialog = PlotterDialog(self.results, self.result_fields)
+        plotter_dialog.exec()
 
     ###############################
     # GUI Output Dialog Interface #

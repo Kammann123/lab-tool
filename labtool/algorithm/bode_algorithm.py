@@ -184,6 +184,9 @@ class BodeAlgorithm(MeasureAlgorithm):
             self.result = bode_aux
             self.finish()
 
+    def get_result(self):
+        return self.result
+
     def what(self):
         return "Measuring bode plots of the system"
 

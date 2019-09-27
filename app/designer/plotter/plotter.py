@@ -1,0 +1,113 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'plotter.ui'
+#
+# Created by: PyQt5 UI code generator 5.11.3
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_Dialog(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(767, 469)
+        self.verticalLayout = QtWidgets.QVBoxLayout(Dialog)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.preview = QtWidgets.QStackedWidget(Dialog)
+        self.preview.setObjectName("preview")
+        self.page = QtWidgets.QWidget()
+        self.page.setObjectName("page")
+        self.preview.addWidget(self.page)
+        self.page_2 = QtWidgets.QWidget()
+        self.page_2.setObjectName("page_2")
+        self.preview.addWidget(self.page_2)
+        self.verticalLayout.addWidget(self.preview)
+        self.line = QtWidgets.QFrame(Dialog)
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setObjectName("line")
+        self.verticalLayout.addWidget(self.line)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalWidget = QtWidgets.QWidget(Dialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.verticalWidget.sizePolicy().hasHeightForWidth())
+        self.verticalWidget.setSizePolicy(sizePolicy)
+        self.verticalWidget.setMinimumSize(QtCore.QSize(200, 0))
+        self.verticalWidget.setObjectName("verticalWidget")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.verticalWidget)
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.label = QtWidgets.QLabel(self.verticalWidget)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        self.verticalLayout_3.addWidget(self.label, 0, QtCore.Qt.AlignHCenter)
+        self.x_channel = QtWidgets.QComboBox(self.verticalWidget)
+        self.x_channel.setMinimumSize(QtCore.QSize(0, 25))
+        self.x_channel.setObjectName("x_channel")
+        self.verticalLayout_3.addWidget(self.x_channel)
+        self.horizontalLayout.addWidget(self.verticalWidget)
+        self.verticalWidget_2 = QtWidgets.QWidget(Dialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.verticalWidget_2.sizePolicy().hasHeightForWidth())
+        self.verticalWidget_2.setSizePolicy(sizePolicy)
+        self.verticalWidget_2.setMinimumSize(QtCore.QSize(200, 0))
+        self.verticalWidget_2.setObjectName("verticalWidget_2")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.verticalWidget_2)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
+        self.label_4 = QtWidgets.QLabel(self.verticalWidget_2)
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_4.setFont(font)
+        self.label_4.setObjectName("label_4")
+        self.verticalLayout_6.addWidget(self.label_4, 0, QtCore.Qt.AlignHCenter)
+        self.y_channel = QtWidgets.QComboBox(self.verticalWidget_2)
+        self.y_channel.setMinimumSize(QtCore.QSize(0, 25))
+        self.y_channel.setObjectName("y_channel")
+        self.verticalLayout_6.addWidget(self.y_channel)
+        self.horizontalLayout.addWidget(self.verticalWidget_2)
+        self.update = QtWidgets.QPushButton(Dialog)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.update.sizePolicy().hasHeightForWidth())
+        self.update.setSizePolicy(sizePolicy)
+        font = QtGui.QFont()
+        font.setPointSize(9)
+        font.setBold(True)
+        font.setWeight(75)
+        self.update.setFont(font)
+        self.update.setObjectName("update")
+        self.horizontalLayout.addWidget(self.update)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        self.label.setText(_translate("Dialog", "X Axis Channel"))
+        self.label_4.setText(_translate("Dialog", "Y Axis Channel"))
+        self.update.setText(_translate("Dialog", "Update Plot!"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Dialog = QtWidgets.QDialog()
+    ui = Ui_Dialog()
+    ui.setupUi(Dialog)
+    Dialog.show()
+    sys.exit(app.exec_())
+
