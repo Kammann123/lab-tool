@@ -20,6 +20,7 @@ from labtool.tool import LabTool
 # Installing devices...(?)
 from labtool.oscilloscope.agilent.agilent_dso6014A import AgilentDSO6014A
 from labtool.oscilloscope.agilent.agilent_dso7014A import AgilentDSO7014A
+from labtool.oscilloscope.rigol.rigol_ds4014 import RigolDS4014
 
 from labtool.generator.agilent.agilent_33220a import Agilent33220A
 

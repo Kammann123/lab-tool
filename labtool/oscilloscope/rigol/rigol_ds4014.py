@@ -17,6 +17,11 @@ class RigolDS4014(AgilentDSO6014A):
     brand = "RIGOL"
     model = "DS4014"
 
+    bandwidth_limit = {
+        BandwidthLimit.On: "20M",
+        BandwidthLimit.Off: "0"
+    }
+
 
 # Subscribing the new instrument to the lab-tool register
 LabTool.add_oscilloscope(RigolDS4014)
