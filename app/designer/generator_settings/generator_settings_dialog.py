@@ -42,12 +42,7 @@ class GeneratorSettingsDialog(QDialog, Ui_GeneratorSettings):
         self.samples.valueChanged.connect(self.on_changes)
         self.scale.currentTextChanged.connect(self.on_changes)
 
-    ######################
-    # GUI Dialog Outputs #
-    ######################
-    def make_preferences_setup(self) -> dict:
-        """ Returns the setup object of the preferences """
-        return {
+        self.preferences_setup = {
             "delay": 0.01,
             "stable-time": float(self.establishment_time.value()),
             "scale": LabTool.to_enum(self.scale.currentText(), BodeScale),
@@ -56,11 +51,20 @@ class GeneratorSettingsDialog(QDialog, Ui_GeneratorSettings):
             "samples": int(self.samples.value())
         }
 
-    def make_generator_setup(self) -> dict:
-        """ Returns the setup object of the generator """
-        return {
+        self.generator_setup = {
             "amplitude": float(self.generator_vpp.value())
         }
+
+    ######################
+    # GUI Dialog Outputs #
+    ######################
+    def make_preferences_setup(self) -> dict:
+        """ Returns the setup object of the preferences """
+        return self.preferences_setup
+
+    def make_generator_setup(self) -> dict:
+        """ Returns the setup object of the generator """
+        return self.generator_setup
 
     ####################
     # GUI Dialog Slots #
@@ -69,8 +73,25 @@ class GeneratorSettingsDialog(QDialog, Ui_GeneratorSettings):
         """ Applies changes! """
         if self.changes_detected:
             self.changes_detected = False
-            self.code.setStyleSheet("color: rgba(0, 255, 0, 255);")
-            self.status.setText("All changes have been saved.")
+
+            if self.start_frequency.value() < self.stop_frequency.value():
+                self.preferences_setup = {
+                    "delay": 0.01,
+                    "stable-time": float(self.establishment_time.value()),
+                    "scale": LabTool.to_enum(self.scale.currentText(), BodeScale),
+                    "start-frequency": float(self.start_frequency.value()),
+                    "stop-frequency": float(self.stop_frequency.value()),
+                    "samples": int(self.samples.value())
+                }
+
+                self.generator_setup = {
+                    "amplitude": float(self.generator_vpp.value())
+                }
+
+                self.code.setStyleSheet("color: rgba(0, 255, 0, 255);")
+                self.status.setText("All changes have been saved.")
+            else:
+                self.status.setText("Start frequency is higher than the stop frequency...")
 
     def on_ok(self):
         """ Finishes the dialog process! """
