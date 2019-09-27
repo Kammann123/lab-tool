@@ -6,10 +6,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 # labtool project modules
-from app.labtool_window import LabToolWindow
+from app.designer.window.main_window import MainWindow
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = LabToolWindow()
+    window = MainWindow()
     window.show()
     sys.exit(app.exec())

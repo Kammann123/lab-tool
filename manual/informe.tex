@@ -1,0 +1,28 @@
+% Incluyendo el preambulo de LaTeX para configurar los paquetes que se vayan usando
+\input{./preamble.tex}
+
+% Abrir y crear el documento, llamar a cada uno de los ejercicios
+\begin{document}
+
+    % Crear y configurar el titulo/caratula del informe
+    \title{
+        \normalfont \normalsize \textsc{Instituto Tecnol\'ogico de Buenos Aires} \\ [25pt]
+        \huge Manual de uso LabTool\\
+        \author{
+            \\Grupo 1:\\\\Farall, Facundo\\Gaytan, Joaqu\'in\\Kammann, Lucas\\Maselli, Carlos\\ M\"uller, Malena\\ \\ \\ \\
+            Profesores: \\\\ Jacoby, Daniel\\Belaustegui Goitia, Carlos\\Iribarren, Rodrigo \\ \\ \\ 
+            } 
+        \text{Teor\'ia de Circuitos - 2019}
+    }
+    \pagenumbering{arabic}
+
+    \maketitle
+    \newpage
+
+    % Crear indice del informe
+    \tableofcontents
+
+    % Incluyendo los ejercicios realizados
+    \newpage
+    \input{./manual.tex}
+\end{document}
