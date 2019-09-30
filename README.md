@@ -1,5 +1,15 @@
 # lab-tool
-Measuring automation tool using VISA standard to connect with laboratory devices
+Measuring automation tool using VISA standard to connect with laboratory devices.
+
+Currently supporting oscilloscopes and generators:
+* Agilent Oscilloscope DSO6014A
+* Agilent Oscilloscope DSO7014A
+* Agilent Generator 33220A
+
+Features overview:
+* Measure a system's bode plot
+* Measure a system's input impedance
+* Plotting and exporting as .xls file
 
 ## Requirements
 You will need to have installed the NiVisa package, which can be downloaded here: 
