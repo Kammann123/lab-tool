@@ -16,4 +16,4 @@ You can find a simple manual for using the LabTool in the repository at manual/i
 
 ## Authors
 * Kammann, Lucas Agustín
-* Maselli, Carlos
+* Maselli, Carlos Javier
