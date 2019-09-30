@@ -15,5 +15,5 @@ Note: For this the requirements file is needed, which can be found in the reposi
 You can find a simple manual for using the LabTool in the repository at manual/informe.pdf
 
 ## Authors
-Kammann, Lucas Agustín
-Maselli, Carlos
+* Kammann, Lucas Agustín
+* Maselli, Carlos
