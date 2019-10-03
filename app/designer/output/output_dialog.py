@@ -165,7 +165,7 @@ class OutputDialog(QDialog, Ui_Dialog):
         dataframe = pandas.DataFrame(dictionary)
 
         # Saving the excel file
-        writer = pandas.ExcelWriter("{}.xlsx".format(filepath), engines="xlsxwriter")
+        writer = pandas.ExcelWriter("{}.xlsx".format(filepath), engine="xlsxwriter")
         dataframe.to_excel(writer, sheet_name="Measure Output")
         writer.save()
 
